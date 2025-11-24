@@ -1,0 +1,38 @@
+$.ajax({
+  url: 'https://randomuser.me/api/',
+  dataType: 'json',
+  success: function(data) {
+    console.log(data);
+  }
+});
+
+If our API service is offline or if we are experiencing server issues, we'll return a simple JSON object with an error.
+
+{
+  error: "Uh oh, something has gone wrong. Please tweet us @randomapi about the issue. Thank you."
+}
+
+https://randomuser.me/api/?results=5000
+https://randomuser.me/api/?gender=female
+https://randomuser.me/api/?password=upper,lower,1-16
+https://randomuser.me/api/?seed=foobar
+https://randomuser.me/api/?format=csv
+https://randomuser.me/api/?nat=us,dk,fr,gb
+https://randomuser.me/api/?page=3&results=10&seed=abc
+https://randomuser.me/api/?inc=gender,name,nat
+https://randomuser.me/api/?exc=login
+
+When we release a new version the API, it could possibly break your application. By accessing the API via:
+https://randomuser.me/api/
+
+https://randomuser.me/api/?password=CHARSETS,MIN_LENGTH-MAX_LENGTH
+https://randomuser.me/api/?password=CHARSETS,MAX_LENGTH
+
+// Special chars exactly 32 characters long
+https://randomuser.me/api/?password=special,32
+
+// Uppercase chars between 1 to 8 characters long
+https://randomuser.me/api/?password=upper,1-8
+
+// Special, uppercase, lowercase, and numeric chars between the default 8 to 64 characters long
+https://randomuser.me/api/?password=special,upper,lower,number
