@@ -1,4 +1,4 @@
-package com.example.horseinacoat.data.remote
+package com.example.horseinacoat.data.mapper
 
 import com.example.horseinacoat.data.remote.model.ApiResponse
 import com.example.horseinacoat.data.remote.model.UserDto
