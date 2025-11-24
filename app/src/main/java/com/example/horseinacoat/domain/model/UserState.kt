@@ -1,4 +1,4 @@
-package com.example.horseinacoat.domain
+package com.example.horseinacoat.domain.model
 
 sealed class UserState {
     object Loading : UserState()

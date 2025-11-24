@@ -1,6 +1,6 @@
 package com.example.horseinacoat.domain.usecase
 
-import com.example.horseinacoat.domain.User
+import com.example.horseinacoat.domain.model.User
 import com.example.horseinacoat.domain.repository.UserRepository
 
 class GetAllUsersUseCase(

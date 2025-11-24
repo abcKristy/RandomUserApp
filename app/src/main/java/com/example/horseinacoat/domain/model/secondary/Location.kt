@@ -1,4 +1,4 @@
-package com.example.horseinacoat.domain.secondary
+package com.example.horseinacoat.domain.model.secondary
 
 data class Location(
     val street: Street,

@@ -1,6 +1,7 @@
 package com.example.horseinacoat.domain.repository
 
-import com.example.horseinacoat.domain.User
+import com.example.horseinacoat.domain.model.Result
+import com.example.horseinacoat.domain.model.User
 
 interface UserRepository {
 
@@ -9,13 +10,13 @@ interface UserRepository {
         nationality: String? = null
     ): Result<User>
 
-    suspend fun getAllUsers(): Result<List<User>>
+    suspend fun getAllUsers(): com.example.horseinacoat.domain.model.Result<List<User>>
 
-    suspend fun saveUser(user: User): Result<Unit>
+    suspend fun saveUser(user: User): com.example.horseinacoat.domain.model.Result<Unit>
 
-    suspend fun deleteUser(userId: String): Result<Unit>
+    suspend fun deleteUser(userId: String): com.example.horseinacoat.domain.model.Result<Unit>
 
-    suspend fun getUserById(userId: String): Result<User>
+    suspend fun getUserById(userId: String): com.example.horseinacoat.domain.model.Result<User>
 
     suspend fun isUserSaved(userId: String): Boolean
 }

@@ -2,11 +2,11 @@ package com.example.horseinacoat.data.mapper
 
 import com.example.horseinacoat.data.remote.model.ApiResponse
 import com.example.horseinacoat.data.remote.model.UserDto
-import com.example.horseinacoat.domain.User
-import com.example.horseinacoat.domain.secondary.Location
-import com.example.horseinacoat.domain.secondary.Name
-import com.example.horseinacoat.domain.secondary.Picture
-import com.example.horseinacoat.domain.secondary.Street
+import com.example.horseinacoat.domain.model.User
+import com.example.horseinacoat.domain.model.secondary.Location
+import com.example.horseinacoat.domain.model.secondary.Name
+import com.example.horseinacoat.domain.model.secondary.Picture
+import com.example.horseinacoat.domain.model.secondary.Street
 
 object UserMapper {
 

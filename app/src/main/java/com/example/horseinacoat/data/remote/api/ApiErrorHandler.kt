@@ -20,4 +20,8 @@ object ApiErrorHandler {
             else -> "An unexpected error occurred: ${exception.message}"
         }
     }
+
+    fun isNetworkError(exception: Exception): Boolean {
+        return exception is IOException || exception is SocketTimeoutException
+    }
 }

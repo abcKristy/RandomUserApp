@@ -1,8 +1,8 @@
-package com.example.horseinacoat.domain
+package com.example.horseinacoat.domain.model
 
-import com.example.horseinacoat.domain.secondary.Location
-import com.example.horseinacoat.domain.secondary.Name
-import com.example.horseinacoat.domain.secondary.Picture
+import com.example.horseinacoat.domain.model.secondary.Location
+import com.example.horseinacoat.domain.model.secondary.Name
+import com.example.horseinacoat.domain.model.secondary.Picture
 
 data class User(
     val id: String,
