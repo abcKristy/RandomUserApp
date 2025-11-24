@@ -10,9 +10,9 @@ interface UserRepository {
         nationality: String? = null
     ): Result<User>
 
-    suspend fun getAllUsers(): com.example.horseinacoat.domain.model.Result<List<User>>
+    suspend fun getAllUsers(): Result<List<User>>
 
-    suspend fun saveUser(user: User): com.example.horseinacoat.domain.model.Result<Unit>
+    suspend fun saveUser(user: User): Result<Unit>
 
     suspend fun deleteUser(userId: String): com.example.horseinacoat.domain.model.Result<Unit>
 
