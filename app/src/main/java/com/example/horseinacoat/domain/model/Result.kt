@@ -10,4 +10,16 @@ sealed class Result<out T> {
 
     val isError: Boolean
         get() = this is Error
+
+    val resultData: T?
+        get() = when (this) {
+            is Success -> data
+            else -> null
+        }
+
+    val resultException: Exception?
+        get() = when (this) {
+            is Error -> exception
+            else -> null
+        }
 }
