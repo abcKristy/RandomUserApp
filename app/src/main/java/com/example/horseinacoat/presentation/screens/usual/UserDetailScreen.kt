@@ -14,10 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -35,32 +33,34 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import androidx.room.util.TableInfo
 import coil.compose.AsyncImage
 import com.example.horseinacoat.R
 import com.example.horseinacoat.domain.model.User
+import com.example.horseinacoat.domain.model.secondary.Dob
 import com.example.horseinacoat.domain.model.secondary.Location
 import com.example.horseinacoat.domain.model.secondary.Name
 import com.example.horseinacoat.domain.model.secondary.Picture
 import com.example.horseinacoat.presentation.viewModel.UserDetailViewModel
 import com.example.horseinacoat.ui.theme.HorseInACoatTheme
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -174,8 +174,15 @@ fun UserDetailContent(user: User) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
-                .background(MaterialTheme.colorScheme.primaryContainer),
+                .height(150.dp)
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primaryContainer,
+                            MaterialTheme.colorScheme.primary
+                        )
+                    )
+                ),
             contentAlignment = Alignment.Center
         ) {
         }
@@ -241,46 +248,61 @@ fun UserDetailContent(user: User) {
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    Row(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(60.dp)
+                            .background(
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(
+                                        MaterialTheme.colorScheme.primaryContainer,
+                                        MaterialTheme.colorScheme.primary
+                                    )
+                                ),
+                                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+                            )
                     ) {
-                        TabButton(
-                            icon = R.drawable.ic_user,
-                            isSelected = selectedTab == 0,
-                            onClick = { selectedTab = 0 },
-                            modifier = Modifier.weight(1f),
-                            isFirst = true,
-                            isLast = false
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(60.dp)
+                        ) {
+                            TabButton(
+                                icon = R.drawable.ic_user,
+                                isSelected = selectedTab == 0,
+                                onClick = { selectedTab = 0 },
+                                modifier = Modifier.weight(1f),
+                                isFirst = true,
+                                isLast = false
+                            )
 
-                        TabButton(
-                            icon = R.drawable.ic_phone,
-                            isSelected = selectedTab == 1,
-                            onClick = { selectedTab = 1 },
-                            modifier = Modifier.weight(1f),
-                            isFirst = false,
-                            isLast = false
-                        )
+                            TabButton(
+                                icon = R.drawable.ic_phone,
+                                isSelected = selectedTab == 1,
+                                onClick = { selectedTab = 1 },
+                                modifier = Modifier.weight(1f),
+                                isFirst = false,
+                                isLast = false
+                            )
 
-                        TabButton(
-                            icon = R.drawable.ic_mail,
-                            isSelected = selectedTab == 2,
-                            onClick = { selectedTab = 2 },
-                            modifier = Modifier.weight(1f),
-                            isFirst = false,
-                            isLast = false
-                        )
+                            TabButton(
+                                icon = R.drawable.ic_mail,
+                                isSelected = selectedTab == 2,
+                                onClick = { selectedTab = 2 },
+                                modifier = Modifier.weight(1f),
+                                isFirst = false,
+                                isLast = false
+                            )
 
-                        TabButton(
-                            icon = R.drawable.ic_loc,
-                            isSelected = selectedTab == 3,
-                            onClick = { selectedTab = 3 },
-                            modifier = Modifier.weight(1f),
-                            isFirst = false,
-                            isLast = true
-                        )
+                            TabButton(
+                                icon = R.drawable.ic_location,
+                                isSelected = selectedTab == 3,
+                                onClick = { selectedTab = 3 },
+                                modifier = Modifier.weight(1f),
+                                isFirst = false,
+                                isLast = true
+                            )
+                        }
                     }
 
                     when (selectedTab) {
@@ -308,13 +330,13 @@ fun TabButton(
     val backgroundColor = if (isSelected) {
         MaterialTheme.colorScheme.surface
     } else {
-        MaterialTheme.colorScheme.primaryContainer
+        MaterialTheme.colorScheme.surface.copy(alpha = 0f)
     }
 
     val iconColor = if (isSelected) {
         MaterialTheme.colorScheme.primary
     } else {
-        MaterialTheme.colorScheme.onPrimaryContainer
+        MaterialTheme.colorScheme.onPrimary
     }
 
     val shape = when {
@@ -353,9 +375,19 @@ fun ProfileContent(user: User) {
         UserInfoSection(
             title = "Основная информация",
             items = listOf(
-                InfoItem(R.drawable.ic_user, "Имя", "${user.name.first} ${user.name.last}"),
-                InfoItem(R.drawable.ic_user, "Пол", if (user.gender == "male") "Мужской" else "Женский"),
-                InfoItem(R.drawable.ic_user, "Национальность", user.nat)
+                InfoItem("Имя:", "${user.name.first} ${user.name.last}"),
+                InfoItem("Пол:", if (user.gender == "male") "Мужской" else "Женский"),
+                InfoItem("Национальность:", user.nat),
+                InfoItem("Возраст:", "${user.dob?.age ?: "Не указан"} лет"),
+                InfoItem("Дата рождения:", user.dob?.date?.let { dateString ->
+                    try {
+                        val instant = Instant.parse(dateString)
+                        val localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate()
+                        DateTimeFormatter.ofPattern("dd.MM.yyyy").format(localDate)
+                    } catch (e: Exception) {
+                        dateString
+                    }
+                } ?: "Не указана")
             )
         )
     }
@@ -372,8 +404,8 @@ fun PhoneContent(user: User) {
         UserInfoSection(
             title = "Телефонные номера",
             items = listOf(
-                InfoItem(R.drawable.ic_back, "Основной телефон", user.phone),
-                InfoItem(R.drawable.ic_back, "Мобильный телефон", user.cell)
+                InfoItem("Основной телефон:", user.phone),
+                InfoItem("Мобильный телефон:", user.cell)
             )
         )
     }
@@ -390,7 +422,7 @@ fun EmailContent(user: User) {
         UserInfoSection(
             title = "Электронная почта",
             items = listOf(
-                InfoItem(R.drawable.ic_back, "Email адрес", user.email)
+                InfoItem("Email адрес:", user.email)
             )
         )
     }
@@ -407,11 +439,11 @@ fun LocationContent(user: User) {
         UserInfoSection(
             title = "Местоположение",
             items = listOf(
-                InfoItem(R.drawable.ic_back, "Адрес", "${user.location.street.number} ${user.location.street.name}"),
-                InfoItem(R.drawable.ic_back, "Город", user.location.city),
-                InfoItem(R.drawable.ic_back, "Регион", user.location.state),
-                InfoItem(R.drawable.ic_back, "Страна", user.location.country),
-                InfoItem(R.drawable.ic_back, "Почтовый индекс", user.location.postcode.toString())
+                InfoItem("Адрес:", "${user.location.street.number} ${user.location.street.name}"),
+                InfoItem("Город:", user.location.city),
+                InfoItem("Регион:", user.location.state),
+                InfoItem("Страна:", user.location.country),
+                InfoItem("Почтовый индекс:", user.location.postcode.toString())
             )
         )
     }
@@ -438,7 +470,6 @@ fun UserInfoSection(
         ) {
             items.forEach { item ->
                 UserInfoRow(
-                    icon = item.icon,
                     label = item.label,
                     value = item.value
                 )
@@ -449,7 +480,6 @@ fun UserInfoSection(
 
 @Composable
 fun UserInfoRow(
-    icon: Int,
     label: String,
     value: String
 ) {
@@ -457,36 +487,20 @@ fun UserInfoRow(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.Top
     ) {
-        Icon(
-            painter = painterResource(id = icon),
-            contentDescription = null,
-            modifier = Modifier
-                .size(24.dp)
-                .padding(top = 2.dp),
-            tint = MaterialTheme.colorScheme.primary
+        Text(
+            text = buildAnnotatedString {
+                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                    append(label)
+                }
+                append(" $value")
+            },
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface
         )
-        Spacer(modifier = Modifier.size(16.dp))
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = value,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(top = 2.dp)
-            )
-        }
     }
 }
 
 data class InfoItem(
-    val icon: Int,
     val label: String,
     val value: String
 )
@@ -498,7 +512,7 @@ enum class UserDetailTab(
     PROFILE("Профиль", R.drawable.ic_user),
     PHONE("Телефон", R.drawable.ic_phone),
     EMAIL("Почта", R.drawable.ic_mail),
-    LOCATION("Адрес", R.drawable.ic_loc)
+    LOCATION("Адрес", R.drawable.ic_location)
 }
 
 @Preview(name = "User Detail", showBackground = true)
@@ -532,7 +546,11 @@ fun UserDetailPreview() {
                     medium = "https://randomuser.me/api/portraits/men/1.jpg",
                     thumbnail = "https://randomuser.me/api/portraits/men/1.jpg"
                 ),
-                nat = "RU"
+                nat = "RU",
+                dob = Dob(
+                    date = "1990-05-15T09:30:00.000Z",
+                    age = 33
+                )
             )
         )
     }

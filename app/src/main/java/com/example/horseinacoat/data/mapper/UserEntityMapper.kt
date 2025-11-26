@@ -2,6 +2,7 @@ package com.example.horseinacoat.data.mapper
 
 import com.example.horseinacoat.data.local.entity.UserEntity
 import com.example.horseinacoat.domain.model.User
+import com.example.horseinacoat.domain.model.secondary.Dob
 import com.example.horseinacoat.domain.model.secondary.Location
 import com.example.horseinacoat.domain.model.secondary.Name
 import com.example.horseinacoat.domain.model.secondary.Picture
@@ -28,7 +29,9 @@ object UserEntityMapper {
             pictureLarge = picture.large,
             pictureMedium = picture.medium,
             pictureThumbnail = picture.thumbnail,
-            nationality = nat
+            nationality = nat,
+            dobDate = dob?.date ?: "",
+            dobAge = dob?.age ?: 0
         )
     }
 
@@ -60,6 +63,10 @@ object UserEntityMapper {
                 thumbnail = pictureThumbnail
             ),
             nat = nationality,
+            dob = Dob(
+                date = dobDate,
+                age = dobAge
+            ),
             isSaved = true
         )
     }

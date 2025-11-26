@@ -3,6 +3,7 @@ package com.example.horseinacoat.data.mapper
 import com.example.horseinacoat.data.remote.model.ApiResponse
 import com.example.horseinacoat.data.remote.model.UserDto
 import com.example.horseinacoat.domain.model.User
+import com.example.horseinacoat.domain.model.secondary.Dob
 import com.example.horseinacoat.domain.model.secondary.Location
 import com.example.horseinacoat.domain.model.secondary.Name
 import com.example.horseinacoat.domain.model.secondary.Picture
@@ -38,6 +39,10 @@ object UserMapper {
                 thumbnail = picture.thumbnail
             ),
             nat = nat,
+            dob = Dob(
+                date = dob.date,
+                age = dob.age
+            ),
             isSaved = false
         )
     }

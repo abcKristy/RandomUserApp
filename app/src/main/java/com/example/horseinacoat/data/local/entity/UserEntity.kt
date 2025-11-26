@@ -21,6 +21,12 @@ data class UserEntity(
     @ColumnInfo(name = "last_name")
     val lastName: String,
 
+    @ColumnInfo(name = "dob_date")
+    val dobDate: String,
+
+    @ColumnInfo(name = "dob_age")
+    val dobAge: Int,
+
     @ColumnInfo(name = "street_number")
     val streetNumber: Int,
 
