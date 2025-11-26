@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.horseinacoat.domain.model.User
+import com.example.horseinacoat.test.filter.UserCard
 import com.example.horseinacoat.ui.theme.HorseInACoatTheme
 import dagger.hilt.android.AndroidEntryPoint
 

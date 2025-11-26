@@ -19,4 +19,10 @@ interface UserRepository {
     suspend fun getUserById(userId: String): com.example.horseinacoat.domain.model.Result<User>
 
     suspend fun isUserSaved(userId: String): Boolean
+
+    suspend fun getUsersWithFilters(
+        count: Int = 1,
+        gender: String? = null,
+        nationality: String? = null
+    ): Result<List<User>>
 }

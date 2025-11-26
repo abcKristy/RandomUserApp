@@ -1,7 +1,6 @@
 package com.example.horseinacoat.di
 
 import com.example.horseinacoat.data.remote.api.ApiConstants
-import com.example.horseinacoat.data.remote.api.RetrofitInstance
 import com.example.horseinacoat.data.remote.api.UserApiService
 import dagger.Module
 import dagger.Provides

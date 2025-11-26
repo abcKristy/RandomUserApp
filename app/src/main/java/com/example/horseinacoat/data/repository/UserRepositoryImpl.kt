@@ -3,13 +3,12 @@ package com.example.horseinacoat.data.repository
 import com.example.horseinacoat.data.local.dao.UserDao
 import com.example.horseinacoat.data.mapper.UserEntityMapper
 import com.example.horseinacoat.data.mapper.UserMapper
+import com.example.horseinacoat.data.mapper.UserMapper.toDomainUserList
 import com.example.horseinacoat.data.remote.api.UserApiService
 import com.example.horseinacoat.data.remote.api.ApiErrorHandler
 import com.example.horseinacoat.domain.model.User
 import com.example.horseinacoat.domain.repository.UserRepository
 import com.example.horseinacoat.domain.model.Result
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
@@ -104,21 +103,20 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    fun observeAllUsers(): Flow<List<User>> {
-        return userDao.observeAllUsers().map { userEntities ->
-            UserEntityMapper.run {
-                userEntities.toDomain()
-            }
+    override suspend fun getUsersWithFilters(
+        count: Int,
+        gender: String?,
+        nationality: String?
+    ): Result<List<User>> = runCatching {
+        userApiService.getUsersWithFilters(
+            count = count,
+            gender = gender,
+            nationality = nationality
+        ).toDomainUserList()
+    }.fold(
+        onSuccess = { Result.Success(it) },
+        onFailure = {
+            Result.Error(Exception(ApiErrorHandler.handleException(it as Exception)))
         }
-    }
-
-    fun observeUserById(userId: String): Flow<User?> {
-        return userDao.observeUserById(userId).map { userEntity ->
-            userEntity?.let {
-                UserEntityMapper.run {
-                    it.toDomain()
-                }
-            }
-        }
-    }
+    )
 }

@@ -3,6 +3,7 @@ package com.example.horseinacoat.di
 import com.example.horseinacoat.domain.repository.UserRepository
 import com.example.horseinacoat.domain.usecase.GetAllUsersUseCase
 import com.example.horseinacoat.domain.usecase.GetRandomUserUseCase
+import com.example.horseinacoat.domain.usecase.GetUsersWithFiltersUseCase
 import com.example.horseinacoat.domain.usecase.IsUserSavedUseCase
 import com.example.horseinacoat.domain.usecase.SaveUserUseCase
 import dagger.Module
@@ -45,5 +46,12 @@ object UseCaseModule {
         repository: UserRepository
     ): IsUserSavedUseCase {
         return IsUserSavedUseCase(repository)
+    }
+    @Provides
+    @Singleton
+    fun provideGetUsersWithFiltersUseCase(
+        repository: UserRepository
+    ): GetUsersWithFiltersUseCase {
+        return GetUsersWithFiltersUseCase(repository)
     }
 }

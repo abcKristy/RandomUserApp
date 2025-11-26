@@ -19,7 +19,7 @@ interface UserApiService {
     ): ApiResponse
 
     @GET("api/")
-    suspend fun getMultipleUsers(
+    suspend fun getUsersWithFilters(
         @Query("results") count: Int,
         @Query("gender") gender: String? = null,
         @Query("nat") nationality: String? = null

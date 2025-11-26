@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.horseinacoat.domain.model.User
 import com.example.horseinacoat.domain.usecase.*
+import com.example.horseinacoat.test.filter.UserState
+import com.example.horseinacoat.test.filter.UsersState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
