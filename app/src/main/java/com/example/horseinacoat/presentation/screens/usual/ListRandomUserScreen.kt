@@ -21,6 +21,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -47,6 +48,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.horseinacoat.R
 import com.example.horseinacoat.domain.model.User
+import com.example.horseinacoat.presentation.navigation.NavigationRoutes
 import com.example.horseinacoat.presentation.viewModel.ListRandomUserViewModel
 import com.example.horseinacoat.ui.theme.HorseInACoatTheme
 
@@ -64,6 +66,28 @@ fun ListRandomUserScreen(
         viewModel.loadUsers()
     }
 
+    ListRandomUserContent(
+        navController = navController,
+        users = users,
+        isLoading = isLoading,
+        error = error,
+        onRefresh = { viewModel.refreshUsers() },
+        onAddUserClick = {
+            navController.navigate(NavigationRoutes.ADD_NEW_RANDOM_USER_SCREEN)
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ListRandomUserContent(
+    navController: NavController,
+    users: List<User>,
+    isLoading: Boolean,
+    error: String?,
+    onRefresh: () -> Unit,
+    onAddUserClick: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -91,6 +115,19 @@ fun ListRandomUserScreen(
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onAddUserClick,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_add),
+                    contentDescription = "Добавить пользователя"
+                )
+            }
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
@@ -133,7 +170,7 @@ fun ListRandomUserScreen(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
-                            onClick = { viewModel.refreshUsers() },
+                            onClick = onRefresh,
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary
@@ -178,7 +215,7 @@ fun ListRandomUserScreen(
                 }
 
                 Button(
-                    onClick = { viewModel.refreshUsers() },
+                    onClick = onRefresh,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp),
@@ -209,7 +246,7 @@ fun UserCard(user: User) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(6.dp),
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(

@@ -1,12 +1,12 @@
 package com.example.horseinacoat.presentation.navigation
 
-
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.horseinacoat.presentation.screens.MainScreen
 import com.example.horseinacoat.presentation.screens.custom.CustomMainScreen
+import com.example.horseinacoat.presentation.screens.usual.AddNewRandomUserScreen
 import com.example.horseinacoat.presentation.screens.usual.ListRandomUserScreen
 
 @Composable
@@ -34,6 +34,10 @@ fun AppNavigation() {
 
         composable(NavigationRoutes.LIST_RANDOM_USER_SCREEN) {
             ListRandomUserScreen(navController = navController)
+        }
+
+        composable(NavigationRoutes.ADD_NEW_RANDOM_USER_SCREEN) {
+            AddNewRandomUserScreen(navController = navController)
         }
     }
 }
