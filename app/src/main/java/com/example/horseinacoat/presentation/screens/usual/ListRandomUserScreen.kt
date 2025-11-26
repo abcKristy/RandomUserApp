@@ -198,13 +198,6 @@ fun ListRandomUserContent(
                         )
                     }
                 } else {
-                    Text(
-                        text = "Сохраненные пользователи",
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
@@ -212,19 +205,6 @@ fun ListRandomUserContent(
                             UserCard(user = user)
                         }
                     }
-                }
-
-                Button(
-                    onClick = onRefresh,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                ) {
-                    Text("Обновить список")
                 }
             }
         }
