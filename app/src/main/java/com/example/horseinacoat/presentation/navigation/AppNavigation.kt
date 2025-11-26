@@ -1,13 +1,16 @@
 package com.example.horseinacoat.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.horseinacoat.presentation.screens.MainScreen
 import com.example.horseinacoat.presentation.screens.custom.CustomMainScreen
 import com.example.horseinacoat.presentation.screens.usual.AddNewRandomUserScreen
 import com.example.horseinacoat.presentation.screens.usual.ListRandomUserScreen
+import com.example.horseinacoat.presentation.screens.usual.UserDetailScreen
 
 @Composable
 fun AppNavigation() {
@@ -38,6 +41,21 @@ fun AppNavigation() {
 
         composable(NavigationRoutes.ADD_NEW_RANDOM_USER_SCREEN) {
             AddNewRandomUserScreen(navController = navController)
+        }
+
+        composable(
+            route = "user_detail_screen/{userId}",
+            arguments = listOf(
+                navArgument("userId") {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId") ?: ""
+            UserDetailScreen(
+                navController = navController,
+                userId = userId
+            )
         }
     }
 }

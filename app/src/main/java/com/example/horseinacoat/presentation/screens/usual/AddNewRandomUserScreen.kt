@@ -101,7 +101,7 @@ fun AddNewRandomUserContent(
     var nationalityExpanded by remember { mutableStateOf(false) }
 
     val genders = listOf("Мужской", "Женский")
-    val nationalities = listOf("RU", "US", "GB", "DE", "FR", "JP", "CN", "BR", "IN")
+    val nationalities = listOf("AU", "BR", "CA", "CH", "DE,", "DK", "ES", "FI", "FR", "GB", "IE", "IN", "IR", "MX", "NL", "NO", "NZ", "RS", "TR", "UA", "US")
 
     Scaffold(
         topBar = {

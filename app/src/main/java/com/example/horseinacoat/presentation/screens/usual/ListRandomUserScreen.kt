@@ -74,6 +74,9 @@ fun ListRandomUserScreen(
         onRefresh = { viewModel.refreshUsers() },
         onAddUserClick = {
             navController.navigate(NavigationRoutes.ADD_NEW_RANDOM_USER_SCREEN)
+        },
+        onUserClick = { userId ->
+            navController.navigate(NavigationRoutes.createUserDetailRoute(userId))
         }
     )
 }
@@ -86,7 +89,8 @@ fun ListRandomUserContent(
     isLoading: Boolean,
     error: String?,
     onRefresh: () -> Unit,
-    onAddUserClick: () -> Unit
+    onAddUserClick: () -> Unit,
+    onUserClick: (String) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -202,7 +206,10 @@ fun ListRandomUserContent(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(users) { user ->
-                            UserCard(user = user)
+                            UserCard(
+                                user = user,
+                                onMoreClick = { onUserClick(user.id) }
+                            )
                         }
                     }
                 }
@@ -212,7 +219,10 @@ fun ListRandomUserContent(
 }
 
 @Composable
-fun UserCard(user: User) {
+fun UserCard(
+    user: User,
+    onMoreClick: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -223,52 +233,68 @@ fun UserCard(user: User) {
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(16.dp)
         ) {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    model = user.picture.medium,
-                    error = painterResource(id = R.drawable.horse)
-                ),
-                contentDescription = "User Avatar",
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(CircleShape)
-            )
-
-            Spacer(modifier = Modifier.size(16.dp))
-
-            Column(
-                modifier = Modifier.weight(1f)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "${user.name.first} ${user.name.last}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                Image(
+                    painter = rememberAsyncImagePainter(
+                        model = user.picture.medium,
+                        error = painterResource(id = R.drawable.horse)
+                    ),
+                    contentDescription = "User Avatar",
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(CircleShape)
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.size(16.dp))
 
-                Text(
-                    text = user.phone,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = "${user.name.first} ${user.name.last}",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
 
-                Spacer(modifier = Modifier.height(2.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
 
-                Text(
-                    text = "Национальность: ${user.nat}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                    Text(
+                        text = user.phone,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(modifier = Modifier.height(2.dp))
+
+                    Text(
+                        text = "Национальность: ${user.nat}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                // Иконка "больше" в правом верхнем углу
+                IconButton(
+                    onClick = onMoreClick,
+                    modifier = Modifier.size(24.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_more),
+                        contentDescription = "Подробнее",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
     }
@@ -278,7 +304,15 @@ fun UserCard(user: User) {
 @Composable
 fun ListRandomUserScreenDayPreview() {
     HorseInACoatTheme(darkTheme = false) {
-        ListRandomUserScreen(navController = rememberNavController())
+        ListRandomUserContent(
+            navController = rememberNavController(),
+            users = emptyList(),
+            isLoading = false,
+            error = null,
+            onRefresh = {},
+            onAddUserClick = {},
+            onUserClick = {}
+        )
     }
 }
 
@@ -286,7 +320,15 @@ fun ListRandomUserScreenDayPreview() {
 @Composable
 fun ListRandomUserScreenNightPreview() {
     HorseInACoatTheme(darkTheme = true) {
-        ListRandomUserScreen(navController = rememberNavController())
+        ListRandomUserContent(
+            navController = rememberNavController(),
+            users = emptyList(),
+            isLoading = false,
+            error = null,
+            onRefresh = {},
+            onAddUserClick = {},
+            onUserClick = {}
+        )
     }
 }
 
@@ -322,7 +364,8 @@ fun UserCardPreview() {
                     thumbnail = ""
                 ),
                 nat = "US"
-            )
+            ),
+            onMoreClick = {}
         )
     }
 }
