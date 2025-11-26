@@ -10,7 +10,7 @@ interface UserApiService {
     suspend fun getRandomUser(
         @Query("gender") gender: String? = null,
         @Query("nat") nationality: String? = null,
-        @Query("results") results: Int,
+        @Query("results") results: Int? = 1,
         @Query("seed") seed: String? = null,
         @Query("page") page: Int? = null,
         @Query("inc") includeFields: String? = null,

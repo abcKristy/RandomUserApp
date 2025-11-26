@@ -5,6 +5,12 @@ sealed class Result<out T> {
     data class Error(val exception: Exception) : Result<Nothing>()
     object Loading : Result<Nothing>()
 
+    val message: String?
+        get() = when (this) {
+            is Success -> null
+            is Error -> exception.message
+            is Loading -> "Loading..."
+        }
     val isSuccess: Boolean
         get() = this is Success
 

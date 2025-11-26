@@ -1,8 +1,10 @@
 package com.example.horseinacoat.di
 
 import com.example.horseinacoat.domain.repository.UserRepository
+import com.example.horseinacoat.domain.usecase.DeleteUserUseCase
 import com.example.horseinacoat.domain.usecase.GetAllUsersUseCase
 import com.example.horseinacoat.domain.usecase.GetRandomUserUseCase
+import com.example.horseinacoat.domain.usecase.GetUserByIdUseCase
 import com.example.horseinacoat.domain.usecase.GetUsersWithFiltersUseCase
 import com.example.horseinacoat.domain.usecase.IsUserSavedUseCase
 import com.example.horseinacoat.domain.usecase.SaveUserUseCase
@@ -53,5 +55,20 @@ object UseCaseModule {
         repository: UserRepository
     ): GetUsersWithFiltersUseCase {
         return GetUsersWithFiltersUseCase(repository)
+    }
+    @Provides
+    @Singleton
+    fun provideDeleteUserUseCase(
+        repository: UserRepository
+    ): DeleteUserUseCase {
+        return DeleteUserUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetUserByIdUseCase(
+        repository: UserRepository
+    ): GetUserByIdUseCase {
+        return GetUserByIdUseCase(repository)
     }
 }
