@@ -97,7 +97,7 @@ fun ListRandomUserContent(
             TopAppBar(
                 title = {
                     Text(
-                        "Случайные пользователи",
+                        "Random users",
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontWeight = FontWeight.Medium
                     )
@@ -113,7 +113,7 @@ fun ListRandomUserContent(
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_back),
-                            contentDescription = "Назад",
+                            contentDescription = "Back",
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
@@ -129,7 +129,7 @@ fun ListRandomUserContent(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_add),
-                    contentDescription = "Добавить пользователя"
+                    contentDescription = "Add user"
                 )
             }
         },
@@ -157,7 +157,7 @@ fun ListRandomUserContent(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "Загрузка пользователей...",
+                            text = "Loading users...",
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -168,7 +168,7 @@ fun ListRandomUserContent(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = error ?: "Произошла ошибка",
+                            text = error,
                             color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.bodyMedium
                         )
@@ -180,7 +180,7 @@ fun ListRandomUserContent(
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             )
                         ) {
-                            Text("Повторить")
+                            Text("Retry")
                         }
                     }
                 } else if (users.isEmpty()) {
@@ -190,12 +190,12 @@ fun ListRandomUserContent(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "Нет сохраненных пользователей",
+                            text = "No user saved",
                             style = MaterialTheme.typography.headlineMedium,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "Сохраните пользователей, чтобы они появились здесь",
+                            text = "Save user if you want to see him/her here",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 16.dp)
@@ -236,11 +236,11 @@ fun UserCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(6.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Top
             ) {
                 Image(
                     painter = rememberAsyncImagePainter(
@@ -249,8 +249,8 @@ fun UserCard(
                     ),
                     contentDescription = "User Avatar",
                     modifier = Modifier
-                        .size(60.dp)
-                        .clip(CircleShape)
+                        .size(80.dp)
+                        .clip(RoundedCornerShape(12.dp))
                 )
 
                 Spacer(modifier = Modifier.size(16.dp))
@@ -278,21 +278,21 @@ fun UserCard(
                     Spacer(modifier = Modifier.height(2.dp))
 
                     Text(
-                        text = "Национальность: ${user.nat}",
+                        text = user.nat,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
-                // Иконка "больше" в правом верхнем углу
                 IconButton(
                     onClick = onMoreClick,
                     modifier = Modifier.size(24.dp)
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_more),
-                        contentDescription = "Подробнее",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        contentDescription = "More",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }

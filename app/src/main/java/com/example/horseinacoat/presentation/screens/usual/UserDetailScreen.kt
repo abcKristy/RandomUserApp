@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -83,15 +84,16 @@ fun UserDetailScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Детали пользователя",
+                        "User's detail",
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontWeight = FontWeight.Medium
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
+                    containerColor = Color.Transparent,
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 navigationIcon = {
                     IconButton(
@@ -99,11 +101,19 @@ fun UserDetailScreen(
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_back),
-                            contentDescription = "Назад",
+                            contentDescription = "back",
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
-                }
+                },
+                modifier = Modifier.background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primaryContainer,
+                            MaterialTheme.colorScheme.primary
+                        )
+                    )
+                )
             )
         },
         containerColor = MaterialTheme.colorScheme.background
@@ -126,7 +136,7 @@ fun UserDetailScreen(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "Загрузка...",
+                            text = "Loading...",
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -138,7 +148,7 @@ fun UserDetailScreen(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = error ?: "Ошибка загрузки",
+                            text = error ?: "Error of loading",
                             color = MaterialTheme.colorScheme.error
                         )
                     }
@@ -153,7 +163,7 @@ fun UserDetailScreen(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "Пользователь не найден",
+                            text = "User not found",
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -204,7 +214,7 @@ fun UserDetailContent(user: User) {
                         model = user.picture.large,
                         contentDescription = "User Avatar",
                         modifier = Modifier
-                            .size(120.dp)
+                            .size(160.dp)
                             .clip(CircleShape)
                             .shadow(
                                 elevation = 8.dp,
@@ -216,7 +226,7 @@ fun UserDetailContent(user: User) {
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = "Привет, меня зовут",
+                        text = "Hi, my name is",
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                         fontWeight = FontWeight.Medium
@@ -225,7 +235,14 @@ fun UserDetailContent(user: User) {
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-                        text = "${user.name.first} ${user.name.last}",
+                        text = user.name.first,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Text(
+                        text = user.name.last,
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                         fontWeight = FontWeight.Bold
@@ -373,13 +390,13 @@ fun ProfileContent(user: User) {
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         UserInfoSection(
-            title = "Основная информация",
             items = listOf(
-                InfoItem("Имя:", "${user.name.first} ${user.name.last}"),
-                InfoItem("Пол:", if (user.gender == "male") "Мужской" else "Женский"),
-                InfoItem("Национальность:", user.nat),
-                InfoItem("Возраст:", "${user.dob?.age ?: "Не указан"} лет"),
-                InfoItem("Дата рождения:", user.dob?.date?.let { dateString ->
+                InfoItem("Name:", user.name.first),
+                InfoItem("Last Name:", user.name.last),
+                InfoItem("Male:", if (user.gender == "male") "Man" else "Woman"),
+                InfoItem("Nationality:", user.nat),
+                InfoItem("Age:", "${user.dob?.age ?: "Not shown"} y.o."),
+                InfoItem("Date birth:", user.dob?.date?.let { dateString ->
                     try {
                         val instant = Instant.parse(dateString)
                         val localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate()
@@ -387,7 +404,7 @@ fun ProfileContent(user: User) {
                     } catch (e: Exception) {
                         dateString
                     }
-                } ?: "Не указана")
+                } ?: "Not shown")
             )
         )
     }
@@ -402,10 +419,9 @@ fun PhoneContent(user: User) {
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         UserInfoSection(
-            title = "Телефонные номера",
             items = listOf(
-                InfoItem("Основной телефон:", user.phone),
-                InfoItem("Мобильный телефон:", user.cell)
+                InfoItem("Phone number:", user.phone),
+                InfoItem("Cell number:", user.cell)
             )
         )
     }
@@ -420,9 +436,8 @@ fun EmailContent(user: User) {
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         UserInfoSection(
-            title = "Электронная почта",
             items = listOf(
-                InfoItem("Email адрес:", user.email)
+                InfoItem("Email address:", user.email)
             )
         )
     }
@@ -437,13 +452,12 @@ fun LocationContent(user: User) {
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         UserInfoSection(
-            title = "Местоположение",
             items = listOf(
-                InfoItem("Адрес:", "${user.location.street.number} ${user.location.street.name}"),
-                InfoItem("Город:", user.location.city),
-                InfoItem("Регион:", user.location.state),
-                InfoItem("Страна:", user.location.country),
-                InfoItem("Почтовый индекс:", user.location.postcode.toString())
+                InfoItem("Address:", "${user.location.street.number} ${user.location.street.name}"),
+                InfoItem("City:", user.location.city),
+                InfoItem("Region:", user.location.state),
+                InfoItem("Country:", user.location.country),
+                InfoItem("Post index:", user.location.postcode.toString())
             )
         )
     }
@@ -451,20 +465,11 @@ fun LocationContent(user: User) {
 
 @Composable
 fun UserInfoSection(
-    title: String,
     items: List<InfoItem>
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
         Column(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -509,10 +514,10 @@ enum class UserDetailTab(
     val title: String,
     val icon: Int
 ) {
-    PROFILE("Профиль", R.drawable.ic_user),
-    PHONE("Телефон", R.drawable.ic_phone),
-    EMAIL("Почта", R.drawable.ic_mail),
-    LOCATION("Адрес", R.drawable.ic_location)
+    PROFILE("Profile", R.drawable.ic_user),
+    PHONE("Number phone", R.drawable.ic_phone),
+    EMAIL("Email", R.drawable.ic_mail),
+    LOCATION("Address", R.drawable.ic_location)
 }
 
 @Preview(name = "User Detail", showBackground = true)

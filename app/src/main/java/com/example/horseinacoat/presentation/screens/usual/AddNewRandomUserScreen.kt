@@ -1,6 +1,5 @@
 package com.example.horseinacoat.presentation.screens.usual
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,11 +26,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -100,15 +97,15 @@ fun AddNewRandomUserContent(
     var genderExpanded by remember { mutableStateOf(false) }
     var nationalityExpanded by remember { mutableStateOf(false) }
 
-    val genders = listOf("Мужской", "Женский")
-    val nationalities = listOf("AU", "BR", "CA", "CH", "DE,", "DK", "ES", "FI", "FR", "GB", "IE", "IN", "IR", "MX", "NL", "NO", "NZ", "RS", "TR", "UA", "US")
+    val genders = listOf("Man", "Woman")
+    val nationalities = listOf("AU", "BR", "CA", "CH", "DE", "DK", "ES", "FI", "FR", "GB", "IE", "IN", "IR", "MX", "NL", "NO", "NZ", "RS", "TR", "UA", "US")
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        "Сгенерировать пользователя",
+                        "Generate user",
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontWeight = FontWeight.Medium
                     )
@@ -124,7 +121,7 @@ fun AddNewRandomUserContent(
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_back),
-                            contentDescription = "Назад",
+                            contentDescription = "Back",
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
@@ -156,8 +153,8 @@ fun AddNewRandomUserContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .menuAnchor(),
-                        label = { Text("Пол") },
-                        placeholder = { Text("Выберите пол") }
+                        label = { Text("Male") },
+                        placeholder = { Text("Choose male") }
                     )
 
                     ExposedDropdownMenu(
@@ -165,7 +162,7 @@ fun AddNewRandomUserContent(
                         onDismissRequest = { genderExpanded = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Любой") },
+                            text = { Text("Any") },
                             onClick = {
                                 selectedGender = null
                                 genderExpanded = false
@@ -197,8 +194,8 @@ fun AddNewRandomUserContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .menuAnchor(),
-                        label = { Text("Национальность") },
-                        placeholder = { Text("Выберите национальность") }
+                        label = { Text("Nationality") },
+                        placeholder = { Text("Choose nationality") }
                     )
 
                     ExposedDropdownMenu(
@@ -206,7 +203,7 @@ fun AddNewRandomUserContent(
                         onDismissRequest = { nationalityExpanded = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Любая") },
+                            text = { Text("Any") },
                             onClick = {
                                 selectedNationality = null
                                 nationalityExpanded = false
@@ -231,7 +228,7 @@ fun AddNewRandomUserContent(
                         Button(
                             onClick = {
                                 onChangeUser(
-                                    selectedGender?.let { if (it == "Мужской") "male" else "female" },
+                                    selectedGender?.let { if (it == "Man") "male" else "female" },
                                     selectedNationality
                                 )
                             },
@@ -243,14 +240,14 @@ fun AddNewRandomUserContent(
                                 contentColor = MaterialTheme.colorScheme.onSecondary
                             )
                         ) {
-                            Text("Поменять пользователя")
+                            Text("Choose another user")
                         }
                     }
                     else -> {
                         Button(
                             onClick = {
                                 onFindUser(
-                                    selectedGender?.let { if (it == "Мужской") "male" else "female" },
+                                    selectedGender?.let { if (it == "Man") "male" else "female" },
                                     selectedNationality
                                 )
                             },
@@ -269,7 +266,7 @@ fun AddNewRandomUserContent(
                                     color = MaterialTheme.colorScheme.onPrimary
                                 )
                             } else {
-                                Text("Найти пользователя")
+                                Text("Find user")
                             }
                         }
                     }
@@ -299,7 +296,7 @@ fun AddNewRandomUserContent(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "Пользователь сохранен!",
+                                text = "User saved!",
                                 style = MaterialTheme.typography.headlineSmall,
                                 color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.padding(bottom = 16.dp)
@@ -339,7 +336,7 @@ fun UserCard(
             modifier = Modifier.padding(20.dp)
         ) {
             Text(
-                text = "Найденный пользователь",
+                text = "Random user",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -354,7 +351,7 @@ fun UserCard(
                     contentDescription = "User Avatar",
                     modifier = Modifier
                         .size(80.dp)
-                        .clip(CircleShape)
+                        .clip(RoundedCornerShape(12.dp))
                 )
 
                 Spacer(modifier = Modifier.size(16.dp))
@@ -421,7 +418,7 @@ fun UserCard(
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
-                    Text("Сохранить пользователя")
+                    Text("Save user")
                 }
             }
         }

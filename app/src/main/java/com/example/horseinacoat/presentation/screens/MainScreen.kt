@@ -69,7 +69,7 @@ fun MainScreen(
             Spacer(modifier = Modifier.height(40.dp))
 
             Text(
-                text = "Кто будет на этот раз?",
+                text = "Who will it be this time?",
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
@@ -95,7 +95,7 @@ fun MainScreen(
                 )
             ) {
                 Text(
-                    text = "Обычный режим",
+                    text = "Simple mode",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -119,7 +119,7 @@ fun MainScreen(
                 )
             ) {
                 Text(
-                    text = "Кастомная версия",
+                    text = "Custom mode",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Medium
                 )
