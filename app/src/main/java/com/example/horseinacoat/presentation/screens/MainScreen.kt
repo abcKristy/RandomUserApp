@@ -47,38 +47,38 @@ fun MainScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Иконка приложения
-            Image(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground), // Замени на свою иконку
-                contentDescription = "App Icon",
+            Box(
                 modifier = Modifier
-                    .size(120.dp)
-                    .clip(RoundedCornerShape(16.dp))
-            )
+                    .size(250.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = RoundedCornerShape(20.dp)
+                    )
+                    .clip(RoundedCornerShape(20.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.horse),
+                    contentDescription = "App Icon",
+                    modifier = Modifier
+                        .size(220.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                )
+            }
 
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
-            // Заголовок
             Text(
-                text = "HorseInACoat",
+                text = "Кто будет на этот раз?",
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
-                fontSize = 32.sp
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Генератор случайных пользователей",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                fontSize = 32.sp,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(64.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
-            // Кнопка "Обычный режим"
             Button(
                 onClick = onRandomUserClick,
                 modifier = Modifier
@@ -87,7 +87,7 @@ fun MainScreen(
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = Color.White
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 elevation = ButtonDefaults.buttonElevation(
                     defaultElevation = 8.dp,
@@ -103,7 +103,6 @@ fun MainScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Кнопка "Кастомная версия"
             Button(
                 onClick = onCustomUserClick,
                 modifier = Modifier
@@ -112,7 +111,7 @@ fun MainScreen(
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondary,
-                    contentColor = Color.White
+                    contentColor = MaterialTheme.colorScheme.onSecondary
                 ),
                 elevation = ButtonDefaults.buttonElevation(
                     defaultElevation = 8.dp,
@@ -129,10 +128,22 @@ fun MainScreen(
     }
 }
 
-@Preview(showBackground = true)
+
+@Preview(name = "Main Screen - Day", showBackground = true)
 @Composable
-fun MainScreenPreview() {
-    HorseInACoatTheme {
+fun MainScreenDayPreview() {
+    HorseInACoatTheme(darkTheme = false) {
+        MainScreen(
+            onRandomUserClick = {},
+            onCustomUserClick = {}
+        )
+    }
+}
+
+@Preview(name = "Main Screen - Night", showBackground = true)
+@Composable
+fun MainScreenNightPreview() {
+    HorseInACoatTheme(darkTheme = true) {
         MainScreen(
             onRandomUserClick = {},
             onCustomUserClick = {}
