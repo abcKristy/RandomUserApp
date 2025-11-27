@@ -98,24 +98,25 @@ fun CustomMainScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
+                    .fillMaxSize(),
                 horizontalAlignment = Alignment.Start
             ) {
                 Column(
                     modifier = Modifier
-                        .wrapContentSize()
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(16.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
                     Row(
-                        modifier = Modifier.wrapContentSize(),
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.Top
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.horse),
                             contentDescription = "Horse in a Coat Logo",
                             modifier = Modifier
-                                .padding(6.dp)
+                                .padding(4.dp)
                                 .size(150.dp)
                                 .clip(RoundedCornerShape(12.dp))
                                 .border(
@@ -132,7 +133,8 @@ fun CustomMainScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontStyle = FontStyle.Italic,
                             style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Justify
+                            textAlign = TextAlign.Justify,
+                            modifier = Modifier.weight(1f)
                         )
                     }
 
@@ -149,13 +151,20 @@ fun CustomMainScreen(
                             .fillMaxWidth()
                             .padding(top = 16.dp)
                     )
-                }
-                Spacer(Modifier.height(40.dp))
 
-                CircularButtonSpinner(
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                )
+                        .weight(1.5f)
+                ) {
+                    CircularButtonSpinner(
+                        modifier = Modifier
+                            .fillMaxSize()
+                    )
+                }
             }
         }
     }
@@ -176,10 +185,9 @@ fun CircularButtonSpinner(
         ButtonData("Location Match", "Find nearby users", R.drawable.ic_location)
     )
 
-    Column(
+    Box(
         modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
+        contentAlignment = Alignment.TopCenter
     ) {
         val activeIndex = findTopButtonIndex(animatedRotation, buttons.size)
 
@@ -192,17 +200,20 @@ fun CircularButtonSpinner(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
+                .offset(y = 100.dp)
+                .align(Alignment.TopCenter)
         )
-        Spacer(Modifier.height(35.dp))
 
         Box(
             modifier = Modifier
-                .size(280.dp)
+                .size(450.dp)
+                .offset(y = 200.dp)
+                .align(Alignment.Center)
                 .pointerInput(Unit) {
                     detectDragGestures(
                         onDrag = { change, dragAmount ->
                             change.consume()
-                            rotation += dragAmount.x * 0.8f
+                            rotation += dragAmount.x * 0.5f
                         },
                         onDragEnd = {
                             val targetAngle = findNearestTopAngle(rotation, buttons.size)
@@ -212,18 +223,17 @@ fun CircularButtonSpinner(
                 },
             contentAlignment = Alignment.Center
         ) {
-
             buttons.forEachIndexed { index, buttonData ->
-                val angleDegrees = (index * (360f / buttons.size) - animatedRotation) % 360f
+                val angleDegrees = (index * (360f / buttons.size) + animatedRotation) % 360f
                 val angleRadians = angleDegrees * (PI.toFloat() / 180f)
 
-                val radius = 120.dp
+                val radius = 150.dp
                 val x = (sin(angleRadians) * radius.value).dp
                 val y = (-cos(angleRadians) * radius.value).dp
 
                 val isActive = angleDegrees in 330f..360f || angleDegrees in 0f..30f
                 val scale by animateFloatAsState(
-                    targetValue = if (isActive) 1.3f else 0.9f,
+                    targetValue = if (isActive) 1.4f else 0.8f,
                     label = "scale"
                 )
 
@@ -234,7 +244,7 @@ fun CircularButtonSpinner(
                         .scale(scale),
                     isActive = isActive,
                     onClick = {
-                        val targetAngle = index * (360f / buttons.size)
+                        val targetAngle = -index * (360f / buttons.size)
                         rotation = targetAngle
                     }
                 )
@@ -242,16 +252,60 @@ fun CircularButtonSpinner(
         }
 
         Text(
-            text = "Drag to spin • Top position selects",
+            text = "Drag to explore the full circle • Top position selects",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp)
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 8.dp)
         )
     }
 }
+
+@Composable
+fun CircularSpinnerButton(
+    buttonData: ButtonData,
+    modifier: Modifier = Modifier,
+    isActive: Boolean = false,
+    onClick: () -> Unit = {}
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+    ) {
+        IconButton(
+            onClick = onClick,
+            modifier = Modifier
+                .size(if (isActive) 90.dp else 75.dp)
+                .background(
+                    color = if (isActive) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.secondaryContainer,
+                    shape = CircleShape
+                )
+        ) {
+            Icon(
+                painter = painterResource(id = buttonData.iconRes),
+                contentDescription = buttonData.title,
+                tint = if (isActive) MaterialTheme.colorScheme.onPrimary
+                else MaterialTheme.colorScheme.onSecondaryContainer,
+                modifier = Modifier.size(if (isActive) 36.dp else 30.dp)
+            )
+        }
+
+        if (isActive) {
+            Text(
+                text = buttonData.title,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+    }
+}
+
 private fun findTopButtonIndex(rotation: Float, buttonCount: Int): Int {
     val normalizedRotation = (rotation % 360f).let { if (it < 0) it + 360f else it }
 
@@ -259,7 +313,7 @@ private fun findTopButtonIndex(rotation: Float, buttonCount: Int): Int {
     var closestIndex = 0
 
     for (i in 0 until buttonCount) {
-        val buttonAngle = (i * (360f / buttonCount) - normalizedRotation) % 360f
+        val buttonAngle = (i * (360f / buttonCount) + normalizedRotation) % 360f
         val normalizedButtonAngle = if (buttonAngle < 0) buttonAngle + 360f else buttonAngle
         val diff = minOf(
             abs(normalizedButtonAngle - 0f),
@@ -277,54 +331,12 @@ private fun findTopButtonIndex(rotation: Float, buttonCount: Int): Int {
 
 private fun findNearestTopAngle(currentRotation: Float, buttonCount: Int): Float {
     val anglePerButton = 360f / buttonCount
-    val normalizedRotation = (currentRotation % 360f).let { if (it < 0) it + 360f else it }
 
     val closestIndex = findTopButtonIndex(currentRotation, buttonCount)
 
-    val targetAngle = closestIndex * anglePerButton
+    val targetAngle = -closestIndex * anglePerButton
 
     return targetAngle
-}
-@Composable
-fun CircularSpinnerButton(
-    buttonData: ButtonData,
-    modifier: Modifier = Modifier,
-    isActive: Boolean = false,
-    onClick: () -> Unit = {}
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-    ) {
-        IconButton(
-            onClick = onClick,
-            modifier = Modifier
-                .size(if (isActive) 70.dp else 56.dp)
-                .background(
-                    color = if (isActive) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.secondaryContainer,
-                    shape = CircleShape
-                )
-        ) {
-            Icon(
-                painter = painterResource(id = buttonData.iconRes),
-                contentDescription = buttonData.title,
-                tint = if (isActive) MaterialTheme.colorScheme.onPrimary
-                else MaterialTheme.colorScheme.onSecondaryContainer,
-                modifier = Modifier.size(if (isActive) 32.dp else 28.dp)
-            )
-        }
-
-        if (isActive) {
-            Text(
-                text = buttonData.title,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-        }
-    }
 }
 
 data class ButtonData(
