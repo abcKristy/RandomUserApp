@@ -5,6 +5,7 @@ import com.example.horseinacoat.domain.repository.UserRepository
 import com.example.horseinacoat.domain.usecase.GetRandomUserUseCase
 import com.example.horseinacoat.utils.TestData
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -14,66 +15,83 @@ import org.junit.Test
 
 class GetRandomUserUseCaseTest {
 
-    private lateinit var repository: UserRepository
-    private lateinit var useCase: GetRandomUserUseCase
+    private lateinit var mockRepository: UserRepository
+    private lateinit var getRandomUserUseCase: GetRandomUserUseCase
 
     @Before
     fun setUp() {
-        repository = mockk()
-        useCase = GetRandomUserUseCase(repository)
+        mockRepository = mockk(relaxed = true)
+        getRandomUserUseCase = GetRandomUserUseCase(mockRepository)
     }
 
     @Test
-    fun invoke_shouldReturnSuccess_whenRepositoryReturnsUser() = runTest {
-        // Given
+    fun getRandomUserUseCase_invoke_shouldReturnSuccessWithUser_whenRepositoryReturnsUser() = runTest {
+        // Given: Репозиторий возвращает случайного пользователя
         val expectedUser = TestData.testUser
-        coEvery { repository.getRandomUser(any(), any()) } returns Result.Success(expectedUser)
+        coEvery { mockRepository.getRandomUser(any(), any()) } returns Result.Success(expectedUser)
 
-        // When
-        val result = useCase()
+        // When: Вызываем Use Case без параметров
+        val result = getRandomUserUseCase()
 
-        // Then
-        assertTrue(result is Result.Success)
-        assertEquals(expectedUser, (result as Result.Success).data)
+        // Then: Проверяем успешный результат с пользователем
+        assertTrue("Результат должен быть Success", result is Result.Success)
+        assertEquals("Должен вернуться ожидаемый пользователь", expectedUser, (result as Result.Success).data)
+        coVerify(exactly = 1) { mockRepository.getRandomUser(null, null) }
     }
 
     @Test
-    fun invoke_shouldReturnError_whenRepositoryFails() = runTest {
-        // Given
+    fun getRandomUserUseCase_invoke_shouldPassFiltersToRepository_whenParametersProvided() = runTest {
+        // Given: Настраиваем репозиторий для фильтрованного запроса
+        val gender = "female"
+        val nationality = "FR"
+        val expectedUser = TestData.frenchUser
+        coEvery { mockRepository.getRandomUser(gender, nationality) } returns Result.Success(expectedUser)
+
+        // When: Вызываем Use Case с параметрами фильтрации
+        val result = getRandomUserUseCase(gender, nationality)
+
+        // Then: Проверяем что фильтры переданы в репозиторий
+        assertTrue("Результат должен быть Success", result is Result.Success)
+        assertEquals("Должен вернуться французский пользователь", expectedUser, (result as Result.Success).data)
+        coVerify(exactly = 1) { mockRepository.getRandomUser(gender, nationality) }
+    }
+
+    @Test
+    fun getRandomUserUseCase_invoke_shouldReturnError_whenRepositoryFails() = runTest {
+        // Given: Репозиторий возвращает ошибку
         val expectedException = Exception("Network error")
-        coEvery { repository.getRandomUser(any(), any()) } returns Result.Error(expectedException)
+        coEvery { mockRepository.getRandomUser(any(), any()) } returns Result.Error(expectedException)
 
-        // When
-        val result = useCase()
+        // When: Вызываем Use Case
+        val result = getRandomUserUseCase()
 
-        // Then
-        assertTrue(result is Result.Error)
-        assertEquals(expectedException, (result as Result.Error).exception)
+        // Then: Проверяем что ошибка корректно передана
+        assertTrue("Результат должен быть Error", result is Result.Error)
+        assertEquals("Сообщение об ошибке должно совпадать", expectedException.message, (result as Result.Error).exception.message)
     }
 
     @Test
-    fun invoke_shouldPassCorrectParametersToRepository() = runTest {
-        // Given
-        val gender = "male"
-        val nationality = "US"
-        coEvery { repository.getRandomUser(gender, nationality) } returns Result.Success(TestData.testUser)
+    fun getRandomUserUseCase_invoke_shouldHandleNullParametersCorrectly() = runTest {
+        // Given: Репозиторий принимает null параметры
+        coEvery { mockRepository.getRandomUser(null, null) } returns Result.Success(TestData.testUser)
 
-        // When
-        useCase(gender, nationality)
+        // When: Вызываем Use Case с явными null
+        val result = getRandomUserUseCase(null, null)
 
-        // Then
-        coEvery { repository.getRandomUser(gender, nationality) }
+        // Then: Проверяем вызов с null параметрами
+        assertTrue("Результат должен быть Success", result is Result.Success)
+        coVerify(exactly = 1) { mockRepository.getRandomUser(null, null) }
     }
 
     @Test
-    fun invoke_shouldUseDefaultParameters_whenNoParametersProvided() = runTest {
-        // Given
-        coEvery { repository.getRandomUser(null, null) } returns Result.Success(TestData.testUser)
+    fun getRandomUserUseCase_invoke_shouldUseDefaultParameters_whenNoArguments() = runTest {
+        // Given: Настраиваем вызов без параметров
+        coEvery { mockRepository.getRandomUser(null, null) } returns Result.Success(TestData.testUser)
 
-        // When
-        useCase()
+        // When: Вызываем Use Case без аргументов
+        getRandomUserUseCase()
 
-        // Then
-        coEvery { repository.getRandomUser(null, null) }
+        // Then: Проверяем что использованы параметры по умолчанию (null)
+        coVerify(exactly = 1) { mockRepository.getRandomUser(null, null) }
     }
 }
