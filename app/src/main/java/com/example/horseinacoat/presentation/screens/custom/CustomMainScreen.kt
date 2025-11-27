@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.horseinacoat.R
+import com.example.horseinacoat.presentation.navigation.NavigationRoutes
 import com.example.horseinacoat.ui.theme.HorseInACoatTheme
 import kotlin.math.PI
 import kotlin.math.abs
@@ -162,7 +163,8 @@ fun CustomMainScreen(
                 ) {
                     CircularButtonSpinner(
                         modifier = Modifier
-                            .fillMaxSize()
+                            .fillMaxSize(),
+                        navController = navController
                     )
                 }
             }
@@ -172,17 +174,28 @@ fun CustomMainScreen(
 
 @Composable
 fun CircularButtonSpinner(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavController
 ) {
     var rotation by remember { mutableFloatStateOf(0f) }
     val animatedRotation by animateFloatAsState(targetValue = rotation, label = "rotation")
 
     val buttons = listOf(
-        ButtonData("Soulmate", "Find your perfect match", R.drawable.ic_heart),
-        ButtonData("Team Builder", "Create dream teams", R.drawable.ic_group),
-        ButtonData("User of Month", "Select the best user", R.drawable.ic_priz),
-        ButtonData("Analyze", "Collection statistics", R.drawable.ic_analytics),
-        ButtonData("Location Match", "Find nearby users", R.drawable.ic_location)
+        ButtonData("All Users", "Browse complete user database collection", R.drawable.ic_db) {
+            navController.navigate(NavigationRoutes.ALL_USERS_SCREEN)
+        },
+        ButtonData("Location Match", "Discover nearby users in area", R.drawable.ic_location) {
+            navController.navigate(NavigationRoutes.LOCATION_MATCH_SCREEN)
+        },
+        ButtonData("Random Team", "Generate perfectly random teams", R.drawable.ic_group) {
+            navController.navigate(NavigationRoutes.RANDOM_TEAM_SCREEN)
+        },
+        ButtonData("Full Filter", "Advanced search with multiple criteria filters", R.drawable.ic_analytics) {
+            navController.navigate(NavigationRoutes.FILTERED_MATCH_SCREEN)
+        },
+        ButtonData("Resume", "View professional profile summary", R.drawable.ic_priz) {
+            navController.navigate(NavigationRoutes.RESUME_SCREEN)
+        }
     )
 
     Box(
@@ -276,7 +289,7 @@ fun CircularSpinnerButton(
         modifier = modifier
     ) {
         IconButton(
-            onClick = onClick,
+            onClick = buttonData.onClick ?: onClick,
             modifier = Modifier
                 .size(if (isActive) 90.dp else 75.dp)
                 .background(
@@ -342,7 +355,8 @@ private fun findNearestTopAngle(currentRotation: Float, buttonCount: Int): Float
 data class ButtonData(
     val title: String,
     val description: String,
-    val iconRes: Int
+    val iconRes: Int,
+    val onClick: (() -> Unit)? = null
 )
 
 

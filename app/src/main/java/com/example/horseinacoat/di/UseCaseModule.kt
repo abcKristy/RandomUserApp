@@ -8,7 +8,6 @@ import com.example.horseinacoat.domain.usecase.GetUserByIdUseCase
 import com.example.horseinacoat.domain.usecase.GetUsersWithFiltersUseCase
 import com.example.horseinacoat.domain.usecase.IsUserSavedUseCase
 import com.example.horseinacoat.domain.usecase.SaveUserUseCase
-import com.example.horseinacoat.presentation.viewModel.custom.CustomMainViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -71,15 +70,5 @@ object UseCaseModule {
         repository: UserRepository
     ): GetUserByIdUseCase {
         return GetUserByIdUseCase(repository)
-    }
-
-    @Provides
-    @Singleton
-    fun provideCustomMainUseCases(
-        getRandomUserUseCase: GetRandomUserUseCase,
-        getAllUsersUseCase: GetAllUsersUseCase,
-        saveUserUseCase: SaveUserUseCase
-    ): CustomMainViewModel {
-        return CustomMainViewModel(getRandomUserUseCase, getAllUsersUseCase, saveUserUseCase)
     }
 }
