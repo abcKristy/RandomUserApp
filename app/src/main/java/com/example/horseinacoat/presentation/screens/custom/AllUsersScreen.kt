@@ -1,3 +1,4 @@
+// [file name]: AllUsersScreen.kt
 package com.example.horseinacoat.presentation.screens.custom
 
 import androidx.compose.foundation.Image
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -36,6 +38,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -59,7 +62,8 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.horseinacoat.R
 import com.example.horseinacoat.domain.model.User
 import com.example.horseinacoat.presentation.navigation.NavigationRoutes
-import com.example.horseinacoat.presentation.viewModel.custom.CustomListViewModel
+import com.example.horseinacoat.presentation.viewModel.custom.AllUsersPaginationViewModel
+import com.example.horseinacoat.presentation.viewModel.custom.PaginationState
 import com.example.horseinacoat.ui.theme.HorseInACoatTheme
 import java.time.Instant
 import java.time.ZoneId
@@ -69,22 +73,21 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun AllUsersScreen(
     navController: NavController,
-    viewModel: CustomListViewModel = hiltViewModel()
+    viewModel: AllUsersPaginationViewModel = hiltViewModel()
 ) {
     val users by viewModel.users.collectAsState()
+    val paginationState by viewModel.paginationState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
-
-    LaunchedEffect(Unit) {
-        viewModel.loadUsers()
-    }
 
     AllUsersContent(
         navController = navController,
         users = users,
+        paginationState = paginationState,
         isLoading = isLoading,
         error = error,
-        onRefresh = { viewModel.refreshUsers() },
+        onRefresh = { viewModel.refresh() },
+        onLoadMore = { viewModel.loadNextPage() },
         onAddUserClick = {
             navController.navigate(NavigationRoutes.CUSTOM_ADD_NEW_RANDOM_USER_SCREEN)
         }
@@ -96,19 +99,36 @@ fun AllUsersScreen(
 fun AllUsersContent(
     navController: NavController,
     users: List<User>,
+    paginationState: PaginationState,
     isLoading: Boolean,
     error: String?,
     onRefresh: () -> Unit,
+    onLoadMore: () -> Unit,
     onAddUserClick: () -> Unit
 ) {
     var expandedUserId by remember { mutableStateOf<String?>(null) }
+    val listState = rememberLazyListState()
+
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            val totalItems = listState.layoutInfo.totalItemsCount
+            lastVisibleItem >= totalItems - 5 && paginationState.canLoadMore && !isLoading
+        }
+    }
+
+    LaunchedEffect(shouldLoadMore) {
+        if (shouldLoadMore) {
+            onLoadMore()
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        "All Users",
+                        "All Users (${paginationState.totalItems})",
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontWeight = FontWeight.Medium
                     )
@@ -157,7 +177,7 @@ fun AllUsersContent(
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                if (isLoading) {
+                if (isLoading && users.isEmpty()) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -172,7 +192,7 @@ fun AllUsersContent(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                } else if (error != null) {
+                } else if (error != null && users.isEmpty()) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -214,6 +234,7 @@ fun AllUsersContent(
                     }
                 } else {
                     LazyColumn(
+                        state = listState,
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         items(users) { user ->
@@ -228,6 +249,69 @@ fun AllUsersContent(
                                     }
                                 }
                             )
+                        }
+
+                        if (paginationState.isLoading && users.isNotEmpty()) {
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator(
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                        }
+
+                        if (paginationState.isLastPage && users.isNotEmpty()) {
+                            item {
+                                Text(
+                                    text = "All users loaded",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                if (error != null && users.isNotEmpty()) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = error,
+                                color = MaterialTheme.colorScheme.onErrorContainer,
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Button(
+                                onClick = onRefresh,
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.error,
+                                    contentColor = MaterialTheme.colorScheme.onError
+                                )
+                            ) {
+                                Text("Retry")
+                            }
                         }
                     }
                 }
@@ -448,6 +532,7 @@ private fun formatDate(dateString: String?): String {
         "Not shown"
     }
 }
+
 @Composable
 fun ExpandedPhoneContent(user: User) {
     Column(
@@ -511,7 +596,6 @@ fun ExpandedInfoRow(label: String, value: String) {
     }
 }
 
-
 @Preview(name = "All Users - Loading", showBackground = true)
 @Composable
 fun AllUsersScreenLoadingPreview() {
@@ -519,9 +603,17 @@ fun AllUsersScreenLoadingPreview() {
         AllUsersContent(
             navController = rememberNavController(),
             users = emptyList(),
+            paginationState = PaginationState(
+                currentPage = 0,
+                pageSize = 20,
+                isLastPage = false,
+                totalItems = 0,
+                isLoading = true
+            ),
             isLoading = true,
             error = null,
             onRefresh = {},
+            onLoadMore = {},
             onAddUserClick = {}
         )
     }
@@ -534,9 +626,11 @@ fun AllUsersScreenErrorPreview() {
         AllUsersContent(
             navController = rememberNavController(),
             users = emptyList(),
+            paginationState = PaginationState(),
             isLoading = false,
             error = "Failed to load users",
             onRefresh = {},
+            onLoadMore = {},
             onAddUserClick = {}
         )
     }
@@ -549,9 +643,63 @@ fun AllUsersScreenEmptyPreview() {
         AllUsersContent(
             navController = rememberNavController(),
             users = emptyList(),
+            paginationState = PaginationState(),
             isLoading = false,
             error = null,
             onRefresh = {},
+            onLoadMore = {},
+            onAddUserClick = {}
+        )
+    }
+}
+
+@Preview(name = "All Users - With Pagination", showBackground = true)
+@Composable
+fun AllUsersScreenWithPaginationPreview() {
+    HorseInACoatTheme(darkTheme = false) {
+        AllUsersContent(
+            navController = rememberNavController(),
+            users = List(15) { index ->
+                User(
+                    id = "$index",
+                    gender = if (index % 2 == 0) "male" else "female",
+                    name = com.example.horseinacoat.domain.model.secondary.Name(
+                        first = "User",
+                        last = "$index",
+                        title = if (index % 2 == 0) "Mr" else "Ms"
+                    ),
+                    location = com.example.horseinacoat.domain.model.secondary.Location(
+                        street = com.example.horseinacoat.domain.model.secondary.Street(
+                            number = index,
+                            name = "Street"
+                        ),
+                        city = "City $index",
+                        state = "State",
+                        country = "Country",
+                        postcode = "12345"
+                    ),
+                    email = "user$index@example.com",
+                    phone = "+123456789$index",
+                    cell = "+123456789$index",
+                    picture = com.example.horseinacoat.domain.model.secondary.Picture(
+                        large = "",
+                        medium = "",
+                        thumbnail = ""
+                    ),
+                    nat = "US"
+                )
+            },
+            paginationState = PaginationState(
+                currentPage = 0,
+                pageSize = 20,
+                isLastPage = false,
+                totalItems = 15,
+                isLoading = false
+            ),
+            isLoading = false,
+            error = null,
+            onRefresh = {},
+            onLoadMore = {},
             onAddUserClick = {}
         )
     }

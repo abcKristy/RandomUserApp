@@ -5,6 +5,7 @@ import com.example.horseinacoat.domain.usecase.DeleteUserUseCase
 import com.example.horseinacoat.domain.usecase.GetAllUsersUseCase
 import com.example.horseinacoat.domain.usecase.GetRandomUserUseCase
 import com.example.horseinacoat.domain.usecase.GetUserByIdUseCase
+import com.example.horseinacoat.domain.usecase.GetUsersPaginatedUseCase
 import com.example.horseinacoat.domain.usecase.GetUsersWithFiltersUseCase
 import com.example.horseinacoat.domain.usecase.IsUserSavedUseCase
 import com.example.horseinacoat.domain.usecase.SaveUserUseCase
@@ -85,5 +86,13 @@ object UseCaseModule {
             getRandomUserUseCase,
             saveUserUseCase
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetUsersPaginatedUseCase(
+        repository: UserRepository
+    ): GetUsersPaginatedUseCase {
+        return GetUsersPaginatedUseCase(repository)
     }
 }

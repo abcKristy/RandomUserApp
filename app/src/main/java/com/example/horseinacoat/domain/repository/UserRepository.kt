@@ -21,6 +21,11 @@ interface UserRepository {
 
     suspend fun isUserSaved(userId: String): Boolean
 
+    suspend fun getUsersPaginated(
+        page: Int,
+        pageSize: Int
+    ): Result<List<User>>
+
     suspend fun getUsersWithFilters(
         count: Int = 1,
         gender: String? = null,

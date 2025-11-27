@@ -46,6 +46,21 @@ class UserRepositoryImpl @Inject constructor(
             }
         }
     }
+    override suspend fun getUsersPaginated(
+        page: Int,
+        pageSize: Int
+    ): Result<List<User>> {
+        return try {
+            val offset = page * pageSize
+            val userEntities = userDao.getUsersPaginated(pageSize, offset)
+            val domainUsers = UserEntityMapper.run {
+                userEntities.toDomain()
+            }
+            Result.Success(domainUsers)
+        } catch (e: Exception) {
+            Result.Error(Exception("Failed to load paginated users: ${e.message}"))
+        }
+    }
 
     override suspend fun getAllUsers(): Result<List<User>> {
         return try {
