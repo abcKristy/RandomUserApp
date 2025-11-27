@@ -9,7 +9,7 @@ object NavigationRoutes {
     const val ALL_USERS_SCREEN = "all_users_screen"
     const val LOCATION_MATCH_SCREEN = "location_match_screen"
     const val RANDOM_TEAM_SCREEN = "random_team_screen"
-    const val FILTERED_MATCH_SCREEN = "filtered_match_screen"
+    const val STATISTICS_SCREEN = "statistics_screen"
     const val RESUME_SCREEN = "resume_screen"
 
     fun createUserDetailRoute(userId: String): String {

@@ -2,6 +2,7 @@ package com.example.horseinacoat.domain.repository
 
 import com.example.horseinacoat.domain.model.Result
 import com.example.horseinacoat.domain.model.User
+import com.example.horseinacoat.domain.model.UsersStatistics
 
 interface UserRepository {
 
@@ -25,4 +26,6 @@ interface UserRepository {
         gender: String? = null,
         nationality: String? = null
     ): Result<List<User>>
+
+    suspend fun getUsersStatistics(): Result<UsersStatistics>
 }

@@ -190,8 +190,8 @@ fun CircularButtonSpinner(
         ButtonData("Random Team", "Generate perfectly random teams", R.drawable.ic_group) {
             navController.navigate(NavigationRoutes.RANDOM_TEAM_SCREEN)
         },
-        ButtonData("Full Filter", "Advanced search with multiple criteria filters", R.drawable.ic_analytics) {
-            navController.navigate(NavigationRoutes.FILTERED_MATCH_SCREEN)
+        ButtonData("Statistics", "Database analytics and user insights", R.drawable.ic_analytics) {
+            navController.navigate(NavigationRoutes.STATISTICS_SCREEN)
         },
         ButtonData("Resume", "View professional profile summary", R.drawable.ic_priz) {
             navController.navigate(NavigationRoutes.RESUME_SCREEN)

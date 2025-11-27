@@ -6,9 +6,11 @@ import com.example.horseinacoat.data.mapper.UserMapper
 import com.example.horseinacoat.data.mapper.UserMapper.toDomainUserList
 import com.example.horseinacoat.data.remote.api.UserApiService
 import com.example.horseinacoat.data.remote.api.ApiErrorHandler
+import com.example.horseinacoat.domain.model.CityCount
 import com.example.horseinacoat.domain.model.User
 import com.example.horseinacoat.domain.repository.UserRepository
 import com.example.horseinacoat.domain.model.Result
+import com.example.horseinacoat.domain.model.UsersStatistics
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
@@ -119,4 +121,62 @@ class UserRepositoryImpl @Inject constructor(
             Result.Error(Exception(ApiErrorHandler.handleException(it as Exception)))
         }
     )
+
+    override suspend fun getUsersStatistics(): Result<UsersStatistics> {
+        return try {
+            val users = userDao.getAllUsers()
+            val domainUsers = UserEntityMapper.run {
+                users.toDomain()
+            }
+
+            val statistics = calculateStatistics(domainUsers)
+            Result.Success(statistics)
+        } catch (e: Exception) {
+            Result.Error(Exception("Failed to calculate statistics: ${e.message}"))
+        }
+    }
+
+    private fun calculateStatistics(users: List<User>): UsersStatistics {
+        if (users.isEmpty()) return UsersStatistics()
+
+        val genderDistribution = users.groupingBy { it.gender }.eachCount()
+
+        val nationalityDistribution = users.groupingBy { it.nat }.eachCount()
+
+        val ageDistribution = users.groupingBy { user ->
+            when (val age = user.dob?.age ?: 0) {
+                in 0..17 -> "0-17"
+                in 18..25 -> "18-25"
+                in 26..35 -> "26-35"
+                in 36..50 -> "36-50"
+                else -> "50+"
+            }
+        }.eachCount()
+
+        val countryDistribution = users.groupingBy { it.location.country }.eachCount()
+
+        val topCities = users.groupingBy { it.location.city }
+            .eachCount()
+            .map { CityCount(it.key, it.value) }
+            .sortedByDescending { it.count }
+            .take(10)
+
+        val averageAge = users.mapNotNull { it.dob?.age }.average()
+
+        val usersWithAge = users.filter { it.dob?.age != null }
+        val newestUser = usersWithAge.maxByOrNull { it.dob?.age ?: 0 }
+        val oldestUser = usersWithAge.minByOrNull { it.dob?.age ?: 0 }
+
+        return UsersStatistics(
+            totalUsers = users.size,
+            genderDistribution = genderDistribution,
+            nationalityDistribution = nationalityDistribution,
+            ageDistribution = ageDistribution,
+            countryDistribution = countryDistribution,
+            topCities = topCities,
+            averageAge = averageAge,
+            newestUser = newestUser,
+            oldestUser = oldestUser
+        )
+    }
 }

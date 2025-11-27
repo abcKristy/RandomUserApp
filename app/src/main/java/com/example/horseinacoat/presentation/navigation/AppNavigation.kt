@@ -72,8 +72,8 @@ fun AppNavigation() {
             RandomTeamScreen(navController = navController)
         }
 
-        composable(NavigationRoutes.FILTERED_MATCH_SCREEN) {
-            FilteredMatchScreen(navController = navController)
+        composable(NavigationRoutes.STATISTICS_SCREEN) {
+            StatisticsScreen(navController = navController)
         }
 
         composable(NavigationRoutes.RESUME_SCREEN) {
