@@ -38,8 +38,10 @@ import com.example.horseinacoat.R
 import com.example.horseinacoat.presentation.viewModel.custom.StatisticsViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.horseinacoat.domain.model.CityCount
 import com.example.horseinacoat.domain.model.UsersStatistics
+import com.example.horseinacoat.ui.theme.HorseInACoatTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -405,5 +407,118 @@ private fun CityRow(cityCount: CityCount) {
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.primary
         )
+    }
+}
+
+@Preview(name = "Statistics - Day", showBackground = true)
+@Composable
+fun StatisticsScreenDayPreview() {
+    HorseInACoatTheme(darkTheme = false) {
+        StatisticsContent(
+            statistics = UsersStatistics(
+                totalUsers = 150,
+                averageAge = 32.5,
+                genderDistribution = mapOf(
+                    "male" to 80,
+                    "female" to 70
+                ),
+                ageDistribution = mapOf(
+                    "18-25" to 40,
+                    "26-35" to 65,
+                    "36-45" to 30,
+                    "46+" to 15
+                ),
+                nationalityDistribution = mapOf(
+                    "US" to 50,
+                    "UK" to 30,
+                    "CA" to 25,
+                    "AU" to 20,
+                    "DE" to 15,
+                    "FR" to 10
+                ),
+                topCities = listOf(
+                    CityCount("New York", 25),
+                    CityCount("London", 20),
+                    CityCount("Sydney", 15),
+                    CityCount("Toronto", 12),
+                    CityCount("Berlin", 10)
+                )
+            )
+        )
+    }
+}
+
+@Preview(name = "Statistics - Night", showBackground = true)
+@Composable
+fun StatisticsScreenNightPreview() {
+    HorseInACoatTheme(darkTheme = true) {
+        StatisticsContent(
+            statistics = UsersStatistics(
+                totalUsers = 150,
+                averageAge = 32.5,
+                genderDistribution = mapOf(
+                    "male" to 80,
+                    "female" to 70
+                ),
+                ageDistribution = mapOf(
+                    "18-25" to 40,
+                    "26-35" to 65,
+                    "36-45" to 30,
+                    "46+" to 15
+                ),
+                nationalityDistribution = mapOf(
+                    "US" to 50,
+                    "UK" to 30,
+                    "CA" to 25,
+                    "AU" to 20,
+                    "DE" to 15,
+                    "FR" to 10
+                ),
+                topCities = listOf(
+                    CityCount("New York", 25),
+                    CityCount("London", 20),
+                    CityCount("Sydney", 15),
+                    CityCount("Toronto", 12),
+                    CityCount("Berlin", 10)
+                )
+            )
+        )
+    }
+}
+
+@Preview(name = "Statistics - Empty", showBackground = true)
+@Composable
+fun StatisticsScreenEmptyPreview() {
+    HorseInACoatTheme(darkTheme = false) {
+        EmptyDatabaseState(onRefresh = {})
+    }
+}
+
+@Preview(name = "Statistics - Loading", showBackground = true)
+@Composable
+fun StatisticsScreenLoadingPreview() {
+    HorseInACoatTheme(darkTheme = false) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    }
+}
+
+@Preview(name = "Statistics - Error", showBackground = true)
+@Composable
+fun StatisticsScreenErrorPreview() {
+    HorseInACoatTheme(darkTheme = false) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Error: Failed to load statistics",
+                color = MaterialTheme.colorScheme.error
+            )
+        }
     }
 }

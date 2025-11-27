@@ -50,14 +50,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.horseinacoat.R
 import com.example.horseinacoat.domain.model.User
 import com.example.horseinacoat.presentation.navigation.NavigationRoutes
 import com.example.horseinacoat.presentation.viewModel.custom.CustomListViewModel
+import com.example.horseinacoat.ui.theme.HorseInACoatTheme
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -504,6 +507,52 @@ fun ExpandedInfoRow(label: String, value: String) {
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.End,
             modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+
+@Preview(name = "All Users - Loading", showBackground = true)
+@Composable
+fun AllUsersScreenLoadingPreview() {
+    HorseInACoatTheme(darkTheme = false) {
+        AllUsersContent(
+            navController = rememberNavController(),
+            users = emptyList(),
+            isLoading = true,
+            error = null,
+            onRefresh = {},
+            onAddUserClick = {}
+        )
+    }
+}
+
+@Preview(name = "All Users - Error", showBackground = true)
+@Composable
+fun AllUsersScreenErrorPreview() {
+    HorseInACoatTheme(darkTheme = false) {
+        AllUsersContent(
+            navController = rememberNavController(),
+            users = emptyList(),
+            isLoading = false,
+            error = "Failed to load users",
+            onRefresh = {},
+            onAddUserClick = {}
+        )
+    }
+}
+
+@Preview(name = "All Users - Empty", showBackground = true)
+@Composable
+fun AllUsersScreenEmptyPreview() {
+    HorseInACoatTheme(darkTheme = false) {
+        AllUsersContent(
+            navController = rememberNavController(),
+            users = emptyList(),
+            isLoading = false,
+            error = null,
+            onRefresh = {},
+            onAddUserClick = {}
         )
     }
 }

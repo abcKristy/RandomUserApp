@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -47,6 +48,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.example.horseinacoat.presentation.viewModel.custom.ResumeData
 import com.example.horseinacoat.ui.theme.HorseInACoatTheme
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.clickable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,6 +60,7 @@ fun ResumeScreen(
 ) {
     val resumeData = viewModel.resumeData.collectAsState().value
     val isLoading = viewModel.isLoading.collectAsState().value
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -106,7 +111,6 @@ fun ResumeScreen(
                         .fillMaxSize()
                         .padding(16.dp)
                 ) {
-                    // Header Section
                     item {
                         Card(
                             modifier = Modifier
@@ -148,7 +152,6 @@ fun ResumeScreen(
                         }
                     }
 
-                    // Profile Section
                     item {
                         ResumeSection("Profile") {
                             Text(
@@ -159,7 +162,6 @@ fun ResumeScreen(
                         }
                     }
 
-                    // Contact Information
                     item {
                         ResumeSection("Contact Information") {
                             ContactItem(
@@ -174,9 +176,14 @@ fun ResumeScreen(
                                 icon = painterResource(id = R.drawable.ic_tg),
                                 text = "Telegram: ${resumeData.contact.telegram}"
                             )
-                            ContactItem(
+                            ClickableContactItem(
                                 icon = painterResource(id = R.drawable.ic_github),
-                                text = "GitHub: ${resumeData.contact.github}"
+                                text = "GitHub: ${resumeData.contact.github}",
+                                onClick = {
+                                    // Открываем GitHub в браузере
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(resumeData.contact.github))
+                                    context.startActivity(intent)
+                                }
                             )
                         }
                     }
@@ -225,7 +232,6 @@ fun ResumeScreen(
                         }
                     }
 
-                    // Hobbies
                     item {
                         ResumeSection("Hobbies & Interests") {
                             resumeData.hobbies.forEach { hobby ->
@@ -244,6 +250,47 @@ fun ResumeScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ClickableContactItem(
+    icon: Any,
+    text: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .clickable(onClick = onClick),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        when (icon) {
+            is androidx.compose.ui.graphics.vector.ImageVector -> {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+            is Int -> {
+                Icon(
+                    painter = painterResource(id = icon),
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+        Spacer(modifier = Modifier.width(12.dp))
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.Medium
+        )
     }
 }
 
