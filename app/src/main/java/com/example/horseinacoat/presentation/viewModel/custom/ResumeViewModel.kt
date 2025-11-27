@@ -78,11 +78,14 @@ class ResumeViewModel @Inject constructor() : ViewModel() {
                 mobileDevelopment = listOf(
                     "Kotlin", "Jetpack Compose", "Coroutines", "Clean Architecture",
                     "SOLID principles", "OOP", "Design Patterns (Factory, Observer, Adapter, Singleton)",
-                    "Room ORM", "Retrofit", "REST API", "Complex Animations"
+                    "Room ORM", "Retrofit", "REST API", "Complex Animations",
+                    "Dagger Hilt", "WebSocket", "MVVM/MVI/MVP", "Firebase",
+                    "Navigation Component", "Kotlin Flow",
+                    "Figma", "Postman"
                 ),
                 backendDevelopment = listOf(
                     "Java", "Spring Boot", "Spring Core", "Spring Security",
-                    "PostgreSQL", "MySQL", "Git", "Docker"
+                    "PostgreSQL", "MySQL", "Hibernate", "JPA", "Git", "Docker"
                 ),
                 dataScience = listOf(
                     "Python", "pandas", "NumPy", "matplotlib", "seaborn",

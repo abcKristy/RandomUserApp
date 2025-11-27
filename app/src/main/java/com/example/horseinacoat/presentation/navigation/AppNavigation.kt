@@ -10,6 +10,7 @@ import com.example.horseinacoat.presentation.screens.MainScreen
 import com.example.horseinacoat.presentation.screens.custom.*
 import com.example.horseinacoat.presentation.screens.usual.AddNewRandomUserScreen
 import com.example.horseinacoat.presentation.screens.usual.ListRandomUserScreen
+import com.example.horseinacoat.presentation.screens.custom.LocationMatchScreen
 import com.example.horseinacoat.presentation.screens.usual.UserDetailScreen
 
 @Composable
@@ -35,7 +36,6 @@ fun AppNavigation() {
             CustomMainScreen(navController = navController)
         }
 
-        // Usual screens
         composable(NavigationRoutes.LIST_RANDOM_USER_SCREEN) {
             ListRandomUserScreen(navController = navController)
         }
