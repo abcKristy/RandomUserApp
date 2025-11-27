@@ -60,7 +60,8 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.androidx.core.testing)
     testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.mockk)
+    testImplementation(libs.mockk.android)
+    testImplementation(libs.mockk.agent)
     testImplementation(libs.turbine)
 
     androidTestImplementation(libs.androidx.junit)
@@ -94,4 +95,5 @@ dependencies {
 
     // Coil для изображений
     implementation(libs.coil.compose)
+    testImplementation(kotlin("test"))
 }
