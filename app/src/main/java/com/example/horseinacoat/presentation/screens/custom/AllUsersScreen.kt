@@ -1,4 +1,3 @@
-// [file name]: AllUsersScreen.kt
 package com.example.horseinacoat.presentation.screens.custom
 
 import androidx.compose.foundation.Image
@@ -20,11 +19,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -55,6 +56,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -79,6 +81,8 @@ fun AllUsersScreen(
     val paginationState by viewModel.paginationState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
+    val showDeleteDialog by viewModel.showDeleteDialog.collectAsState()
+    val deleteInProgress by viewModel.deleteInProgress.collectAsState()
 
     AllUsersContent(
         navController = navController,
@@ -86,11 +90,16 @@ fun AllUsersScreen(
         paginationState = paginationState,
         isLoading = isLoading,
         error = error,
+        showDeleteDialog = showDeleteDialog,
+        deleteInProgress = deleteInProgress,
         onRefresh = { viewModel.refresh() },
         onLoadMore = { viewModel.loadNextPage() },
         onAddUserClick = {
             navController.navigate(NavigationRoutes.CUSTOM_ADD_NEW_RANDOM_USER_SCREEN)
-        }
+        },
+        onDeleteClick = { user -> viewModel.showDeleteConfirmation(user) },
+        onConfirmDelete = { userId -> viewModel.deleteUser(userId) },
+        onDismissDelete = { viewModel.hideDeleteConfirmation() }
     )
 }
 
@@ -102,9 +111,14 @@ fun AllUsersContent(
     paginationState: PaginationState,
     isLoading: Boolean,
     error: String?,
+    showDeleteDialog: User?,
+    deleteInProgress: String?,
     onRefresh: () -> Unit,
     onLoadMore: () -> Unit,
-    onAddUserClick: () -> Unit
+    onAddUserClick: () -> Unit,
+    onDeleteClick: (User) -> Unit,
+    onConfirmDelete: (String) -> Unit,
+    onDismissDelete: () -> Unit
 ) {
     var expandedUserId by remember { mutableStateOf<String?>(null) }
     val listState = rememberLazyListState()
@@ -172,148 +186,162 @@ fun AllUsersContent(
                 .padding(paddingValues),
             color = MaterialTheme.colorScheme.surface
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
+            Box(
+                modifier = Modifier.fillMaxSize()
             ) {
-                if (isLoading && users.isEmpty()) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Loading users...",
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                } else if (error != null && users.isEmpty()) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = error,
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(
-                            onClick = onRefresh,
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
-                            )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
+                    if (isLoading && users.isEmpty()) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
                         ) {
-                            Text("Retry")
-                        }
-                    }
-                } else if (users.isEmpty()) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = "No Users Found",
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "Add users to see them in the list",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = 16.dp)
-                        )
-                    }
-                } else {
-                    LazyColumn(
-                        state = listState,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(users) { user ->
-                            CustomUserCard(
-                                user = user,
-                                isExpanded = expandedUserId == user.id,
-                                onCardClick = {
-                                    expandedUserId = if (expandedUserId == user.id) {
-                                        null
-                                    } else {
-                                        user.id
-                                    }
-                                }
+                            CircularProgressIndicator(
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Loading users...",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-
-                        if (paginationState.isLoading && users.isNotEmpty()) {
-                            item {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    CircularProgressIndicator(
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                            }
-                        }
-
-                        if (paginationState.isLastPage && users.isNotEmpty()) {
-                            item {
-                                Text(
-                                    text = "All users loaded",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-
-                if (error != null && users.isNotEmpty()) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                    } else if (error != null && users.isEmpty()) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
                         ) {
                             Text(
                                 text = error,
-                                color = MaterialTheme.colorScheme.onErrorContainer,
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.weight(1f)
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodyMedium
                             )
+                            Spacer(modifier = Modifier.height(16.dp))
                             Button(
                                 onClick = onRefresh,
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.error,
-                                    contentColor = MaterialTheme.colorScheme.onError
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
                                 )
                             ) {
                                 Text("Retry")
                             }
                         }
+                    } else if (users.isEmpty()) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "No Users Found",
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Add users to see them in the list",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(top = 16.dp)
+                            )
+                        }
+                    } else {
+                        LazyColumn(
+                            state = listState,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(users) { user ->
+                                CustomUserCard(
+                                    user = user,
+                                    isExpanded = expandedUserId == user.id,
+                                    isDeleting = deleteInProgress == user.id,
+                                    onCardClick = {
+                                        expandedUserId = if (expandedUserId == user.id) {
+                                            null
+                                        } else {
+                                            user.id
+                                        }
+                                    },
+                                    onDeleteClick = { onDeleteClick(user) }
+                                )
+                            }
+
+                            if (paginationState.isLoading && users.isNotEmpty()) {
+                                item {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator(
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
+                            }
+
+                            if (paginationState.isLastPage && users.isNotEmpty()) {
+                                item {
+                                    Text(
+                                        text = "All users loaded",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp)
+                                    )
+                                }
+                            }
+                        }
                     }
+
+                    if (error != null && users.isNotEmpty()) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer
+                            )
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = error,
+                                    color = MaterialTheme.colorScheme.onErrorContainer,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Button(
+                                    onClick = onRefresh,
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.error,
+                                        contentColor = MaterialTheme.colorScheme.onError
+                                    )
+                                ) {
+                                    Text("Retry")
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (showDeleteDialog != null) {
+                    DeleteConfirmationDialog(
+                        user = showDeleteDialog,
+                        onConfirm = { onConfirmDelete(showDeleteDialog.id) },
+                        onDismiss = onDismissDelete
+                    )
                 }
             }
         }
@@ -324,15 +352,16 @@ fun AllUsersContent(
 fun CustomUserCard(
     user: User,
     isExpanded: Boolean,
-    onCardClick: () -> Unit
+    isDeleting: Boolean,
+    onCardClick: () -> Unit,
+    onDeleteClick: () -> Unit
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 4.dp, vertical = 4.dp)
-            .clickable { onCardClick() },
+            .padding(horizontal = 4.dp, vertical = 4.dp),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = if (isExpanded) 8.dp else 4.dp),
         colors = CardDefaults.cardColors(
@@ -342,10 +371,12 @@ fun CustomUserCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onCardClick() }
+                    .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
@@ -356,7 +387,7 @@ fun CustomUserCard(
                     contentDescription = "User Avatar",
                     modifier = Modifier
                         .size(60.dp)
-                        .clip(CircleShape)
+                        .clip(RoundedCornerShape(12.dp))
                 )
 
                 Spacer(modifier = Modifier.size(16.dp))
@@ -380,6 +411,25 @@ fun CustomUserCard(
                             text = "$age years",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                if (isDeleting) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.primary,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    IconButton(
+                        onClick = onDeleteClick,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_del),
+                            contentDescription = "Delete user",
+                            tint = MaterialTheme.colorScheme.onErrorContainer
                         )
                     }
                 }
@@ -455,6 +505,67 @@ fun CustomUserCard(
             }
         }
     }
+}
+
+@Composable
+fun DeleteConfirmationDialog(
+    user: User,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Delete User",
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        },
+        text = {
+            Column {
+                Text(
+                    text = "Are you sure you want to delete this user?",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "${user.name.first} ${user.name.last}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = user.email,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = onConfirm,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.onErrorContainer,
+                    contentColor = MaterialTheme.colorScheme.onError
+                )
+            ) {
+                Text("Delete")
+            }
+        },
+        dismissButton = {
+            Button(
+                onClick = onDismiss,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.outline,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                )
+            ) {
+                Text("Cancel")
+            }
+        }
+    )
 }
 
 @Composable
@@ -612,26 +723,14 @@ fun AllUsersScreenLoadingPreview() {
             ),
             isLoading = true,
             error = null,
+            showDeleteDialog = null,
+            deleteInProgress = null,
             onRefresh = {},
             onLoadMore = {},
-            onAddUserClick = {}
-        )
-    }
-}
-
-@Preview(name = "All Users - Error", showBackground = true)
-@Composable
-fun AllUsersScreenErrorPreview() {
-    HorseInACoatTheme(darkTheme = false) {
-        AllUsersContent(
-            navController = rememberNavController(),
-            users = emptyList(),
-            paginationState = PaginationState(),
-            isLoading = false,
-            error = "Failed to load users",
-            onRefresh = {},
-            onLoadMore = {},
-            onAddUserClick = {}
+            onAddUserClick = {},
+            onDeleteClick = {},
+            onConfirmDelete = {},
+            onDismissDelete = {}
         )
     }
 }
@@ -646,20 +745,25 @@ fun AllUsersScreenEmptyPreview() {
             paginationState = PaginationState(),
             isLoading = false,
             error = null,
+            showDeleteDialog = null,
+            deleteInProgress = null,
             onRefresh = {},
             onLoadMore = {},
-            onAddUserClick = {}
+            onAddUserClick = {},
+            onDeleteClick = {},
+            onConfirmDelete = {},
+            onDismissDelete = {}
         )
     }
 }
 
-@Preview(name = "All Users - With Pagination", showBackground = true)
+@Preview(name = "All Users - With Users", showBackground = true)
 @Composable
-fun AllUsersScreenWithPaginationPreview() {
+fun AllUsersScreenWithUsersPreview() {
     HorseInACoatTheme(darkTheme = false) {
         AllUsersContent(
             navController = rememberNavController(),
-            users = List(15) { index ->
+            users = List(3) { index ->
                 User(
                     id = "$index",
                     gender = if (index % 2 == 0) "male" else "female",
@@ -693,14 +797,142 @@ fun AllUsersScreenWithPaginationPreview() {
                 currentPage = 0,
                 pageSize = 20,
                 isLastPage = false,
-                totalItems = 15,
+                totalItems = 3,
                 isLoading = false
             ),
             isLoading = false,
             error = null,
+            showDeleteDialog = null,
+            deleteInProgress = null,
             onRefresh = {},
             onLoadMore = {},
-            onAddUserClick = {}
+            onAddUserClick = {},
+            onDeleteClick = {},
+            onConfirmDelete = {},
+            onDismissDelete = {}
+        )
+    }
+}
+
+@Preview(name = "All Users - With Delete Dialog", showBackground = true)
+@Composable
+fun AllUsersScreenWithDeleteDialogPreview() {
+    HorseInACoatTheme(darkTheme = false) {
+        AllUsersContent(
+            navController = rememberNavController(),
+            users = List(2) { index ->
+                User(
+                    id = "$index",
+                    gender = if (index % 2 == 0) "male" else "female",
+                    name = com.example.horseinacoat.domain.model.secondary.Name(
+                        first = "User",
+                        last = "$index",
+                        title = if (index % 2 == 0) "Mr" else "Ms"
+                    ),
+                    location = com.example.horseinacoat.domain.model.secondary.Location(
+                        street = com.example.horseinacoat.domain.model.secondary.Street(
+                            number = index,
+                            name = "Street"
+                        ),
+                        city = "City $index",
+                        state = "State",
+                        country = "Country",
+                        postcode = "12345"
+                    ),
+                    email = "user$index@example.com",
+                    phone = "+123456789$index",
+                    cell = "+123456789$index",
+                    picture = com.example.horseinacoat.domain.model.secondary.Picture(
+                        large = "",
+                        medium = "",
+                        thumbnail = ""
+                    ),
+                    nat = "US"
+                )
+            },
+            paginationState = PaginationState(
+                currentPage = 0,
+                pageSize = 20,
+                isLastPage = false,
+                totalItems = 2,
+                isLoading = false
+            ),
+            isLoading = false,
+            error = null,
+            showDeleteDialog = User(
+                id = "1",
+                gender = "male",
+                name = com.example.horseinacoat.domain.model.secondary.Name(
+                    first = "John",
+                    last = "Doe",
+                    title = "Mr"
+                ),
+                location = com.example.horseinacoat.domain.model.secondary.Location(
+                    street = com.example.horseinacoat.domain.model.secondary.Street(
+                        number = 123,
+                        name = "Main St"
+                    ),
+                    city = "New York",
+                    state = "NY",
+                    country = "USA",
+                    postcode = "10001"
+                ),
+                email = "john.doe@example.com",
+                phone = "+1-555-0123",
+                cell = "+1-555-0124",
+                picture = com.example.horseinacoat.domain.model.secondary.Picture(
+                    large = "",
+                    medium = "",
+                    thumbnail = ""
+                ),
+                nat = "US"
+            ),
+            deleteInProgress = null,
+            onRefresh = {},
+            onLoadMore = {},
+            onAddUserClick = {},
+            onDeleteClick = {},
+            onConfirmDelete = {},
+            onDismissDelete = {}
+        )
+    }
+}
+
+@Preview(name = "Delete Dialog", showBackground = true)
+@Composable
+fun DeleteDialogPreview() {
+    HorseInACoatTheme(darkTheme = false) {
+        DeleteConfirmationDialog(
+            user = User(
+                id = "1",
+                gender = "male",
+                name = com.example.horseinacoat.domain.model.secondary.Name(
+                    first = "John",
+                    last = "Doe",
+                    title = "Mr"
+                ),
+                location = com.example.horseinacoat.domain.model.secondary.Location(
+                    street = com.example.horseinacoat.domain.model.secondary.Street(
+                        number = 123,
+                        name = "Main St"
+                    ),
+                    city = "New York",
+                    state = "NY",
+                    country = "USA",
+                    postcode = "10001"
+                ),
+                email = "john.doe@example.com",
+                phone = "+1-555-0123",
+                cell = "+1-555-0124",
+                picture = com.example.horseinacoat.domain.model.secondary.Picture(
+                    large = "",
+                    medium = "",
+                    thumbnail = ""
+                ),
+                nat = "US"
+            ),
+            onConfirm = {},
+            onDismiss = {}
         )
     }
 }

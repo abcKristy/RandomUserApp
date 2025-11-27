@@ -130,7 +130,7 @@ fun ResumeScreen(
                                     contentDescription = "Profile Photo",
                                     modifier = Modifier
                                         .size(100.dp)
-                                        .clip(CircleShape)
+                                        .clip(RoundedCornerShape(12.dp))
                                         .background(MaterialTheme.colorScheme.surface),
                                     contentScale = ContentScale.Crop
                                 )

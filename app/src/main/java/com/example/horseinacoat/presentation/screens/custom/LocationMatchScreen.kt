@@ -332,7 +332,7 @@ fun UserSelectionCard(
                 contentDescription = "User avatar",
                 modifier = Modifier
                     .size(48.dp)
-                    .clip(CircleShape)
+                    .clip(RoundedCornerShape(12.dp))
             )
 
             Spacer(modifier = Modifier.size(12.dp))

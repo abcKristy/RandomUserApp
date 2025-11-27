@@ -1,9 +1,9 @@
-// [file name]: AllUsersPaginationViewModel.kt
 package com.example.horseinacoat.presentation.viewModel.custom
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.horseinacoat.domain.model.User
+import com.example.horseinacoat.domain.usecase.DeleteUserUseCase
 import com.example.horseinacoat.domain.usecase.GetUsersPaginatedUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AllUsersPaginationViewModel @Inject constructor(
-    private val getUsersPaginatedUseCase: GetUsersPaginatedUseCase
+    private val getUsersPaginatedUseCase: GetUsersPaginatedUseCase,
+    private val deleteUserUseCase: DeleteUserUseCase
 ) : ViewModel() {
 
     private val _users = MutableStateFlow<List<User>>(emptyList())
@@ -29,6 +30,12 @@ class AllUsersPaginationViewModel @Inject constructor(
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    private val _showDeleteDialog = MutableStateFlow<User?>(null)
+    val showDeleteDialog: StateFlow<User?> = _showDeleteDialog.asStateFlow()
+
+    private val _deleteInProgress = MutableStateFlow<String?>(null)
+    val deleteInProgress: StateFlow<String?> = _deleteInProgress.asStateFlow()
 
     init {
         loadFirstPage()
@@ -95,6 +102,38 @@ class AllUsersPaginationViewModel @Inject constructor(
                     _paginationState.update { it.copy(isLoading = false) }
                 }
             }
+        }
+    }
+
+    fun showDeleteConfirmation(user: User) {
+        _showDeleteDialog.value = user
+    }
+
+    fun hideDeleteConfirmation() {
+        _showDeleteDialog.value = null
+    }
+
+    fun deleteUser(userId: String) {
+        viewModelScope.launch {
+            _deleteInProgress.value = userId
+            _error.value = null
+
+            val result = deleteUserUseCase(userId)
+
+            if (result.isSuccess) {
+                val currentUsers = _users.value.toMutableList()
+                currentUsers.removeAll { it.id == userId }
+                _users.value = currentUsers
+
+                _paginationState.update { state ->
+                    state.copy(totalItems = currentUsers.size)
+                }
+                _showDeleteDialog.value = null
+            } else {
+                _error.value = result.message ?: "Failed to delete user"
+            }
+
+            _deleteInProgress.value = null
         }
     }
 
