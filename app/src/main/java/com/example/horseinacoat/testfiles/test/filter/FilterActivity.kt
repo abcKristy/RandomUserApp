@@ -1,4 +1,4 @@
-package com.example.horseinacoat.test.filter
+package com.example.horseinacoat.testfiles.test.filter
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

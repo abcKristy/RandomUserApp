@@ -1,4 +1,4 @@
-package com.example.horseinacoat.test.filter
+package com.example.horseinacoat.testfiles.test.filter
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,10 +25,10 @@ class FilterViewModel @Inject constructor(
     private val saveUserUseCase: SaveUserUseCase
 ) : ViewModel() {
 
-    private val _userState = MutableStateFlow(_root_ide_package_.com.example.horseinacoat.test.filter.UserState())
+    private val _userState = MutableStateFlow(UserState())
     val userState: StateFlow<UserState> = _userState.asStateFlow()
 
-    private val _usersState = MutableStateFlow(_root_ide_package_.com.example.horseinacoat.test.filter.UsersState())
+    private val _usersState = MutableStateFlow(UsersState())
     val usersState: StateFlow<UsersState> = _usersState.asStateFlow()
 
     private val _selectedGender = MutableStateFlow<String?>(null)

@@ -1,12 +1,13 @@
-package com.example.horseinacoat.test
+package com.example.horseinacoat.testfiles.test
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.horseinacoat.domain.model.User
 import com.example.horseinacoat.domain.usecase.*
-import com.example.horseinacoat.test.filter.UserState
-import com.example.horseinacoat.test.filter.UsersState
+import com.example.horseinacoat.testfiles.test.filter.UserState
+import com.example.horseinacoat.testfiles.test.filter.UsersState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -106,9 +107,9 @@ class TestViewModel @Inject constructor(
             _testResults.value = _testResults.value + "Запуск всех тестов..."
 
             testGetRandomUser()
-            kotlinx.coroutines.delay(1000)
+            delay(1000)
             testSaveUser()
-            kotlinx.coroutines.delay(500)
+            delay(500)
             testGetAllUsers()
 
             _testResults.value = _testResults.value + "Все тесты завершены"
