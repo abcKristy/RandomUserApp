@@ -1,16 +1,20 @@
 package com.example.horseinacoat.utils
 
 import com.example.horseinacoat.domain.model.User
+import com.example.horseinacoat.domain.model.UsersStatistics
+import com.example.horseinacoat.domain.model.CityCount // Добавляем импорт
 import com.example.horseinacoat.domain.model.secondary.Dob
 import com.example.horseinacoat.domain.model.secondary.Location
 import com.example.horseinacoat.domain.model.secondary.Name
 import com.example.horseinacoat.domain.model.secondary.Picture
-import com.example.horseinacoat.domain.model.UsersStatistics
-import com.example.horseinacoat.domain.model.CityCount
 import com.example.horseinacoat.domain.model.secondary.Street
 
+/**
+ * Test data factory for creating consistent test data across all tests
+ */
 object TestData {
 
+    // Base test user
     val testUser = User(
         id = "1",
         gender = "male",
@@ -34,6 +38,7 @@ object TestData {
         dob = Dob("1990-01-01T00:00:00.000Z", 33)
     )
 
+    // List of test users
     val testUserList = listOf(
         testUser,
         testUser.copy(
@@ -60,8 +65,7 @@ object TestData {
         )
     )
 
-    val emptyUserList = emptyList<User>()
-
+    // French user for nationality testing
     val frenchUser = testUser.copy(
         id = "5",
         name = Name("M", "Pierre", "Dubois"),
@@ -69,6 +73,10 @@ object TestData {
         nat = "FR"
     )
 
+    // Empty user list for edge cases
+    val emptyUserList = emptyList<User>()
+
+    // Test statistics data
     val testStatistics = UsersStatistics(
         totalUsers = 4,
         genderDistribution = mapOf(
@@ -95,13 +103,16 @@ object TestData {
             CityCount("Paris", 1)
         ),
         averageAge = 32.5,
-        newestUser = testUserList[3],
-        oldestUser = testUserList[2]
+        newestUser = testUserList[3], // Alice Brown, age 28
+        oldestUser = testUserList[2]  // Bob Johnson, age 38
     )
 
+    // Empty statistics for edge cases
     val emptyStatistics = UsersStatistics()
 
-
+    /**
+     * Creates a test user with custom properties
+     */
     fun createTestUser(
         id: String = "1",
         gender: String = "male",
@@ -122,7 +133,9 @@ object TestData {
         )
     }
 
-
+    /**
+     * Creates a list of test users with the specified count
+     */
     fun createTestUsers(count: Int): List<User> {
         return List(count) { index ->
             createTestUser(
@@ -132,5 +145,12 @@ object TestData {
                 age = 20 + (index % 40)
             )
         }
+    }
+
+    /**
+     * Creates CityCount objects for testing
+     */
+    fun createCityCount(city: String, count: Int): CityCount {
+        return CityCount(city, count)
     }
 }
