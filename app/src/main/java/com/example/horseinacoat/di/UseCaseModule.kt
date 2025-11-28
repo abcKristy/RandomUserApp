@@ -10,6 +10,7 @@ import com.example.horseinacoat.domain.usecase.GetUsersWithFiltersUseCase
 import com.example.horseinacoat.domain.usecase.IsUserSavedUseCase
 import com.example.horseinacoat.domain.usecase.SaveUserUseCase
 import com.example.horseinacoat.presentation.viewModel.custom.FindFriendViewModel
+import com.example.horseinacoat.presentation.viewModel.custom.RandomTeamViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -94,5 +95,14 @@ object UseCaseModule {
         repository: UserRepository
     ): GetUsersPaginatedUseCase {
         return GetUsersPaginatedUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRandomTeamViewModel(
+        getUsersWithFiltersUseCase: GetUsersWithFiltersUseCase,
+        saveUserUseCase: SaveUserUseCase
+    ): RandomTeamViewModel {
+        return RandomTeamViewModel(getUsersWithFiltersUseCase, saveUserUseCase)
     }
 }
