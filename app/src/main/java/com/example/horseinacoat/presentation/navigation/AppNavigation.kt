@@ -58,9 +58,6 @@ fun AppNavigation() {
                 userId = userId
             )
         }
-        composable(NavigationRoutes.CUSTOM_ADD_NEW_RANDOM_USER_SCREEN) {
-            CustomAddNewScreen(navController = navController)
-        }
 
         composable(NavigationRoutes.ALL_USERS_SCREEN) {
             AllUsersScreen(navController = navController)

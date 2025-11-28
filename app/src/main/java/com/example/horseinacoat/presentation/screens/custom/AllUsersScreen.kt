@@ -166,17 +166,6 @@ fun AllUsersContent(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = onAddUserClick,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_add),
-                    contentDescription = "Add user"
-                )
-            }
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
