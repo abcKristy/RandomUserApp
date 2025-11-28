@@ -12,7 +12,6 @@
   - [DI](#di)
   - [Test](#test)
 - [Технологии](#технологии)
-- [Установка](#установка)
 - [Использование](#использование)
 
 ## Архитектура
@@ -95,10 +94,10 @@
 - Карточка с детальной информацией
 
 **Табы:**
-- 👤 **Profile** - имя, фамилия, пол, национальность, возраст, дата рождения
-- 📞 **Phone** - телефон, cell номер
-- 📧 **Email** - email адрес
-- 📍 **Location** - полный адрес, город, регион, страна, почтовый индекс
+- **Profile** - имя, фамилия, пол, национальность, возраст, дата рождения
+- **Phone** - телефон, cell номер
+- **Email** - email адрес
+- **Location** - полный адрес, город, регион, страна, почтовый индекс
 
 **Особенности:**
 - Красивые градиенты
@@ -124,11 +123,11 @@
 - Описание функционала каждого элемента
 
 **Элементы спиннера:**
-- 👥 All Users - "Browse complete user database collection"
-- 📍 Location Match - "Discover nearby users in area"  
-- 🎲 Random Team - "Generate perfectly random teams"
-- 📊 Statistics - "Database analytics and user insights"
-- 💼 Resume - "View professional profile summary"
+- All Users - "Browse complete user database collection"
+- Location Match - "Discover nearby users in area"  
+- Random Team - "Generate perfectly random teams"
+- Statistics - "Database analytics and user insights"
+- Resume - "View professional profile summary"
 
 ---
 
@@ -212,7 +211,7 @@
 
 ---
 
-## 🔄 Навигационные потоки
+## Навигационные потоки
 
 ### Обычный режим:
 ```
@@ -225,12 +224,12 @@ MainScreen
 ### Кастомный режим:
 ```
 MainScreen 
-    → CustomMainScreen (спиннер)
-        → AllUsersScreen (👥)
-        → LocationMatchScreen (📍) 
-        → RandomTeamScreen (🎲)
-        → StatisticsScreen (📊)
-        → ResumeScreen (💼)
+    → CustomMainScreen
+        → AllUsersScreen
+        → LocationMatchScreen
+        → RandomTeamScreen
+        → StatisticsScreen
+        → ResumeScreen
 ```
 
 ## 🎨 Дизайн-особенности
@@ -253,76 +252,76 @@ MainScreen
 
 Слой данных, отвечающий за получение и хранение информации.
 
-#### [Модели данных](data/remote/model)
-- [`ApiResponse.kt`](data/remote/model/ApiResponse.kt) - ответ API с пользователями
-- [`UserDto.kt`](data/remote/model/UserDto.kt) - DTO модель пользователя из API
-- [`InfoDto.kt`](data/remote/model/ApiResponse.kt) - мета-информация ответа
+#### Модели данных
+- `ApiResponse.kt` - ответ API с пользователями
+- `UserDto.kt` - DTO модель пользователя из API
+- `InfoDto.kt` - мета-информация ответа
 
-#### [База данных](data/local)
-- [`AppDatabase.kt`](data/local/database/AppDatabase.kt) - главная база данных Room
-- [`UserEntity.kt`](data/local/entity/UserEntity.kt) - Entity модель для Room
-- [`UserDao.kt`](data/local/dao/UserDao.kt) - Data Access Object для работы с БД
+#### База данных
+- `AppDatabase.kt` - главная база данных Room
+- `UserEntity.kt` - Entity модель для Room
+- `UserDao.kt` - Data Access Object для работы с БД
 
-#### [API](data/remote/api)
-- [`UserApiService.kt`](data/remote/api/UserApiService.kt) - Retrofit интерфейс
-- [`ApiConstants.kt`](data/remote/api/ApiConstants.kt) - константы API
-- [`ApiErrorHandler.kt`](data/remote/api/ApiErrorHandler.kt) - обработчик ошибок сети
+#### API
+- `UserApiService.kt` - Retrofit интерфейс
+- `ApiConstants.kt` - константы API
+- `ApiErrorHandler.kt` - обработчик ошибок сети
 
-#### [Мапперы](data/mapper)
-- [`UserMapper.kt`](data/mapper/UserMapper.kt) - преобразование DTO → Domain
-- [`UserEntityMapper.kt`](data/mapper/UserEntityMapper.kt) - преобразование Entity ↔ Domain
+#### Мапперы
+- `UserMapper.kt` - преобразование DTO → Domain
+- `UserEntityMapper.kt` - преобразование Entity ↔ Domain
 
-#### [Репозитории](data/repository)
-- [`UserRepositoryImpl.kt`](data/repository/UserRepositoryImpl.kt) - реализация репозитория
+#### Репозитории
+- `UserRepositoryImpl.kt` - реализация репозитория
 
 ### Domain
 
-### [Модели](domain/model)
+### Модели
 
 #### Основные модели
-- [`User.kt`](domain/model/User.kt) - основная модель пользователя
-- [`UserFilter.kt`](domain/model/UserFilter.kt) - фильтры для поиска пользователей
-- [`UsersStatistics.kt`](domain/model/UsersStatistics.kt) - статистика пользователей
-- [`CityCount.kt`](domain/model/UsersStatistics.kt) - счетчик городов для статистики
+- `User.kt` - основная модель пользователя
+- `UserFilter.kt` - фильтры для поиска пользователей
+- `UsersStatistics.kt` - статистика пользователей
+- `CityCount.kt` - счетчик городов для статистики
 
 #### Состояния и результаты
-- [`Result.kt`](domain/model/Result.kt) - sealed class для обработки результатов операций
-- [`UserState.kt`](domain/model/UserState.kt) - состояния UI для пользовательских данных
+- `Result.kt` - sealed class для обработки результатов операций
+- `UserState.kt` - состояния UI для пользовательских данных
 
 ### [Вспомогательные модели](domain/model/secondary)
 
 #### Персональные данные
-- [`Name.kt`](domain/model/secondary/Name.kt) - имя пользователя с вычисляемым свойством `fullName`
-- [`Dob.kt`](domain/model/secondary/Dob.kt) - дата рождения и возраст
-- [`Gender.kt`](domain/model/secondary/Gender.kt) - enum пола пользователя
+- `Name.kt` - имя пользователя с вычисляемым свойством `fullName`
+- `Dob.kt` - дата рождения и возраст
+- `Gender.kt` - enum пола пользователя
 
 #### Локация и контакты
-- [`Location.kt`](domain/model/secondary/Location.kt) - адрес пользователя
-- [`Street.kt`](domain/model/secondary/Location.kt) - улица с вычисляемым свойством `fullAddress`
-- [`Picture.kt`](domain/model/secondary/Picture.kt) - фотографии пользователя
+- `Location.kt` - адрес пользователя
+- `Street.kt` - улица с вычисляемым свойством `fullAddress`
+- `Picture.kt` - фотографии пользователя
 
-### [Use Cases](domain/usecase)
+### Use Cases
 
 Use Cases инкапсулируют бизнес-логику и следуют принципу единой ответственности.
 
 #### Получение пользователей
-- [`GetRandomUserUseCase.kt`](domain/usecase/GetRandomUserUseCase.kt) - получение случайного пользователя
-- [`GetAllUsersUseCase.kt`](domain/usecase/GetAllUsersUseCase.kt) - получение всех пользователей
-- [`GetUserByIdUseCase.kt`](domain/usecase/GetUserByIdUseCase.kt) - получение пользователя по ID
-- [`GetUsersWithFiltersUseCase.kt`](domain/usecase/GetUsersWithFiltersUseCase.kt) - получение пользователей с фильтрами
-- [`GetUsersPaginatedUseCase.kt`](domain/usecase/GetUsersPaginatedUseCase.kt) - пагинация пользователей
+- `GetRandomUserUseCase.kt` - получение случайного пользователя
+- `GetAllUsersUseCase.kt` - получение всех пользователей
+- `GetUserByIdUseCase.kt` - получение пользователя по ID
+- `GetUsersWithFiltersUseCase.kt` - получение пользователей с фильтрами
+- `GetUsersPaginatedUseCase.kt` - пагинация пользователей
 
 #### Управление пользователями
-- [`SaveUserUseCase.kt`](domain/usecase/SaveUserUseCase.kt) - сохранение пользователя
-- [`DeleteUserUseCase.kt`](domain/usecase/DeleteUserUseCase.kt) - удаление пользователя
-- [`IsUserSavedUseCase.kt`](domain/usecase/IsUserSavedUseCase.kt) - проверка сохранения пользователя
+- `SaveUserUseCase.kt` - сохранение пользователя
+- `DeleteUserUseCase.kt` - удаление пользователя
+- `IsUserSavedUseCase.kt` - проверка сохранения пользователя
 
 #### Аналитика
-- [`GetUsersStatisticsUseCase.kt`](domain/usecase/GetUsersStatisticsUseCase.kt) - получение статистики пользователей
+- `GetUsersStatisticsUseCase.kt` - получение статистики пользователей
 
 ### [Репозитории](domain/repository)
 
-- [`UserRepository.kt`](domain/repository/UserRepository.kt) - интерфейс репозитория для работы с пользователями
+- `UserRepository.kt` - интерфейс репозитория для работы с пользователями
 
 ### Ключевые особенности Domain слоя:
 
@@ -332,86 +331,56 @@ Use Cases инкапсулируют бизнес-логику и следуют
 4. **Sealed classes** для обработки состояний и результатов
 5. **Вычисляемые свойства** в моделях (например, `fullName`, `fullAddress`)
 
-### Пример использования UseCase:
-
-```kotlin
-class UserViewModel @Inject constructor(
-    private val getRandomUserUseCase: GetRandomUserUseCase,
-    private val saveUserUseCase: SaveUserUseCase
-) : ViewModel() {
-    
-    fun loadRandomUser() {
-        viewModelScope.launch {
-            when (val result = getRandomUserUseCase()) {
-                is Result.Success -> {
-                    // Обработка успешного результата
-                    val user = result.data
-                }
-                is Result.Error -> {
-                    // Обработка ошибки
-                    val errorMessage = result.exception.message
-                }
-                is Result.Loading -> {
-                    // Показать индикатор загрузки
-                }
-            }
-        }
-    }
-}
-```
-
----
-
 **[⬆ Наверх к содержанию](#содержание)**
 
 ### Presentation
 
-### [Навигация](presentation/navigation)
+### Навигация
 
 #### Основная навигация
-- [`AppNavigation.kt`](presentation/navigation/AppNavigation.kt) - главный навигационный компонент приложения
-- [`NavigationRoutes.kt`](presentation/navigation/NavigationRoutes.kt) - константы маршрутов навигации
+- `AppNavigation.kt` - главный навигационный компонент приложения
+- `NavigationRoutes.kt` - константы маршрутов навигации
 
 #### Структура навигации:
 - **Main Screen** → главный экран выбора режима
 - **Simple Mode** → обычный режим работы с пользователями
 - **Custom Mode** → расширенный режим с дополнительными функциями
 
-### [Основные экраны](presentation/screens)
+### Основные экраны
 
 #### Главные экраны
-- [`MainScreen.kt`](presentation/screens/MainScreen.kt) - стартовый экран с выбором режима работы
-- [`CustomMainScreen.kt`](presentation/screens/custom/CustomMainScreen.kt) - главный экран кастомного режима с интерактивным спиннером
+- `MainScreen.kt` - стартовый экран с выбором режима работы
+- `CustomMainScreen.kt` - главный экран кастомного режима с интерактивным спиннером
 
 #### Простой режим (Simple Mode)
-- [`ListRandomUserScreen.kt`](presentation/screens/usual/ListRandomUserScreen.kt) - список сохраненных пользователей
-- [`AddNewRandomUserScreen.kt`](presentation/screens/usual/AddNewRandomUserScreen.kt) - генерация и сохранение новых пользователей
-- [`UserDetailScreen.kt`](presentation/screens/usual/UserDetailScreen.kt) - детальная информация о пользователе с табами
+- `ListRandomUserScreen.kt` - список сохраненных пользователей
+- `AddNewRandomUserScreen.kt` - генерация и сохранение новых пользователей
+- `UserDetailScreen.kt` - детальная информация о пользователе с табами
 
 #### Кастомный режим (Custom Mode)
-- [`AllUsersScreen.kt`](presentation/screens/custom/AllUsersScreen.kt) - полный список пользователей с пагинацией
-- [`LocationMatchScreen.kt`](presentation/screens/custom/LocationMatchScreen.kt) - поиск друзей по локации
-- [`RandomTeamScreen.kt`](presentation/screens/custom/RandomTeamScreen.kt) - генерация случайных команд
-- [`StatisticsScreen.kt`](presentation/screens/custom/StatisticsScreen.kt) - статистика и аналитика пользователей
-- [`ResumeScreen.kt`](presentation/screens/custom/ResumeScreen.kt) - профессиональное резюме разработчика
+- `AllUsersScreen.kt` - полный список пользователей с пагинацией
+- `LocationMatchScreen.kt` - поиск друзей по локации
+- `RandomTeamScreen.kt` - генерация случайных команд
+- `StatisticsScreen.kt` - статистика и аналитика пользователей
+- `ResumeScreen.kt` - профессиональное резюме разработчика
 
 ### [ViewModels](presentation/viewModel)
 
 #### Основные ViewModels
-- [`ListRandomUserViewModel.kt`](presentation/viewModel/ListRandomUserViewModel.kt) - управление списком пользователей
-- [`AddNewRandomUserViewModel.kt`](presentation/viewModel/AddNewRandomUserViewModel.kt) - генерация и сохранение пользователей
-- [`UserDetailViewModel.kt`](presentation/viewModel/UserDetailViewModel.kt) - детальная информация о пользователе
+- `ListRandomUserViewModel.kt` - управление списком пользователей
+- `AddNewRandomUserViewModel.kt` - генерация и сохранение пользователей
+- `UserDetailViewModel.kt` - детальная информация о пользователе
 
 #### Кастомные ViewModels
-- [`CustomListViewModel.kt`](presentation/viewModel/custom/CustomListViewModel.kt) - управление кастомным списком
-- [`AllUsersPaginationViewModel.kt`](presentation/viewModel/custom/AllUsersPaginationViewModel.kt) - пагинация пользователей
-- [`FindFriendViewModel.kt`](presentation/viewModel/custom/FindFriendViewModel.kt) - поиск друзей по локации
-- [`RandomTeamViewModel.kt`](presentation/viewModel/custom/RandomTeamViewModel.kt) - генерация случайных команд
-- [`StatisticsViewModel.kt`](presentation/viewModel/custom/StatisticsViewModel.kt) - управление статистикой
-- [`ResumeViewModel.kt`](presentation/viewModel/custom/ResumeViewModel.kt) - данные резюме
+- `CustomListViewModel.kt` - управление кастомным списком
+- `AllUsersPaginationViewModel.kt` - пагинация пользователей
+- `FindFriendViewModel.kt` - поиск друзей по локации
+- `RandomTeamViewModel.kt` - генерация случайных команд
+- `StatisticsViewModel.kt` - управление статистикой
+- `ResumeViewModel.kt` - данные резюме
 
 #### Состояния
-- [`PaginationState.kt`](presentation/viewModel/custom/PaginationState.kt) - состояние пагинации
+- `PaginationState.kt` - состояние пагинации
 
 ### Ключевые особенности Presentation слоя:
 
@@ -437,28 +406,6 @@ class UserViewModel @Inject constructor(
 3. **Pull-to-Refresh** - обновление жестом потягивания
 4. **Lazy Loading** - ленивая загрузка списков
 
-### Пример структуры экрана:
-
-```kotlin
-@Composable
-fun ExampleScreen(
-    viewModel: ExampleViewModel = hiltViewModel()
-) {
-    val state by viewModel.state.collectAsState()
-    
-    Scaffold(
-        topBar = { /* TopAppBar */ },
-        content = { paddingValues ->
-            when (state) {
-                is State.Loading -> LoadingState()
-                is State.Success -> SuccessState(state.data)
-                is State.Error -> ErrorState(state.message)
-            }
-        }
-    )
-}
-```
-
 ### Состояния UI:
 
 Каждый экран обрабатывает следующие состояния:
@@ -481,8 +428,6 @@ fun ExampleScreen(
 
 ### DI
 
-#### [Модули](di)
-
 Проект использует **Dagger Hilt** для управления зависимостями, что обеспечивает:
 - **Автоматическое создание зависимостей** - Hilt генерирует код для создания и управления зависимостями
 - **Scope управление** - правильное время жизни объектов через аннотации `@Singleton`
@@ -491,7 +436,7 @@ fun ExampleScreen(
 
 #### Основные модули:
 
-##### [NetworkModule.kt](di/NetworkModule.kt)
+##### NetworkModule.kt
 
 **Назначение**: Конфигурация сетевого слоя
 - **HttpLoggingInterceptor** - логирование сетевых запросов
@@ -499,20 +444,20 @@ fun ExampleScreen(
 - **Retrofit** - REST клиент для работы с API
 - **UserApiService** - интерфейс для API запросов
 
-##### [DatabaseModule.kt](di/DatabaseModule.kt)
+##### DatabaseModule.kt
 
 **Назначение**: Конфигурация базы данных Room
 - **AppDatabase** - главная база данных приложения
 - **UserDao** - Data Access Object для операций с пользователями
 
-##### [RepositoryModule.kt](di/RepositoryModule.kt)
+##### RepositoryModule.kt
 
 
 **Назначение**: Связывание репозиториев
 - **UserRepository** - абстрактный интерфейс репозитория
 - **UserRepositoryImpl** - конкретная реализация репозитория
 
-##### [UseCaseModule.kt](di/UseCaseModule.kt)
+##### UseCaseModule.kt
 
 **Назначение**: Предоставление Use Cases и ViewModels
 - **Use Cases** - инкапсуляция бизнес-логики
@@ -552,7 +497,7 @@ Application
 
 ### Test
 
-#### [Архитектура тестов](test)
+#### Архитектура тестов
 
 Проект использует **многоуровневый подход к тестированию**:
 - **Unit Tests** - тестирование отдельных компонентов
@@ -574,7 +519,7 @@ Application
 - **Coroutines Test** - тестирование асинхронного кода
 - **Instant Task Executor** - тестирование LiveData/ViewModels
 
-#### [Unit Tests](test/unit)
+#### Unit Tests
 
 ##### Use Cases тесты:
 - **GetRandomUserUseCaseTest** - тестирование получения случайного пользователя
@@ -593,7 +538,7 @@ Application
 - **Проверка взаимодействий** - верификация вызовов репозитория с правильными параметрами
 - **Тестирование потоков данных** - проверка корректной передачи данных между слоями
 
-#### [ViewModels Tests](test/viewmodel)
+#### ViewModels Tests
 
 ##### Тесты ViewModels:
 - **CustomListViewModelTest** - тестирование кастомного списка пользователей
@@ -606,7 +551,7 @@ Application
 - **Изоляция зависимостей** - мокирование Use Cases для чистого тестирования
 - **Проверка жизненного цикла** - тестирование методов init и refresh
 
-#### [Test Utilities](test/utils)
+#### Test Utilities
 
 ##### Вспомогательные классы:
 - **TestData** - фабрика тестовых данных для согласованного создания объектов
